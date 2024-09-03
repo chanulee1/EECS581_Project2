@@ -235,11 +235,11 @@ class GameState:
 
                 # If our current column is less than the ending column
                 if ord(column) < ord(end[1]):
-                    column = str(ord(column) + 1)
+                    column = str(chr(ord(column) + 1))
 
                 # If we're going backwards
                 else:
-                    column = str(ord(column) - 1)
+                    column = str(chr(ord(column) - 1))
             
             # If they are in the same column, then we need to increment the nums
             else:
