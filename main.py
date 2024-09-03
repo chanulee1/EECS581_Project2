@@ -18,20 +18,43 @@ def main_menu_loop():
     pass
 
 def main():
+    # clear all logs
     clear_log()
+    # create the UI object
     ui = UIDriver()
+    # create the game state object
     gs = GameState()
-    log("This is a test log!")
 
-    # do main menu handling
-    main_menu_output = ui.draw_main_menu()
+    ## do main menu
+    # draw the title Battleship
+    ui.draw_title(True)
+    # draw the ship number selector
+    ui.draw_ship_nums(True, 3)
+    # draw the ship box
+    ui.draw_ship_box(True)
 
+    # start with the number of ships each side gets
+    num_ships = ui.get_num_ships()
 
-    # main menu options: 
-        # num ships
-        # where ships go on p1 and p2 - GameState.add_ship(point1, point2)
-    # once main menu options are inputted and stored, start main loop
+    # undraw the title
+    ui.draw_title(False)
+    # undraw the ship number selector
+    ui.draw_ship_nums(False)
 
+    # draw player 1's laptop
+    ui.draw_laptop(1)
+    # get the placement of p1's ships
+    p1ships = ui.get_ships(1)
+
+    # draw player 2's laptop
+        # this should account for the animation between them
+    ui.draw_laptop(2)
+    # get the placement of p2's ships
+    p2ships = ui.get_ships(2)
+
+    # finally, tell GameState what we've found out
+
+    # then start the main loop
     # main loop:
         # UIDriver.wait_for_shot()
         # GameState.fire()

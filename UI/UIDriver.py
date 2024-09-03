@@ -14,14 +14,13 @@ import pygame
 class UIDriver:
     def __init__(self):
         """This method initialzes the UIDriver object as well as all relevant member variables"""
-        log("I'm in UIDriver!")
 
         # init member variables
         self.width = 0
         self.height = 0
         self.window = None
 
-        # ints pygame and gets the display size
+        # inits pygame and gets the display size
         pygame.init()
         display_info = pygame.display.Info()
 
@@ -34,7 +33,7 @@ class UIDriver:
 
         # sets the title of the window
         pygame.display.set_caption("Battleship")
-        log("window initialized successfully")
+        log("UIDriver.__init__(self): Window initialized successfully")
 
 
     def draw(self, GS, do_transition):
@@ -43,11 +42,13 @@ class UIDriver:
         pass
 
     def draw_main_menu(self):
-        # draws main menu and returns the user's selection
-        self.window.fill((0, 100, 0)) # royal blue background
+        """Draws main menu and returns the user's selection
+        @return dictionary: main menu settings in a dictionary"""
+        self.window.fill((0, 0, 100)) # royal blue background
         pygame.display.flip()
 
-        log("Main menu drawn successfully")
+        # log that we've drawn the main menu
+        log("UIDriver.draw_main_menu(self): Main menu drawn successfully")
 
         # waits for user inputs and returns the selection
         running = True
@@ -56,6 +57,9 @@ class UIDriver:
                 if event.type == pygame.QUIT:
                     running = False
         pygame.quit()
+
+
+        return 
 
 
 
@@ -75,6 +79,3 @@ class UIDriver:
                 if event.type == pygame.QUIT:
                     running = False
         pygame.quit()
-
-if __name__ == "__main__":
-    print("Put debug code here")

@@ -11,7 +11,7 @@ from Logger.Logger import *
 
 class GameState:
     def __init__(self):
-        log("I'm in GameState!")
+        log("GameState.__init__(self): I'm in GameState!")
         # pandas array for each player's board
         # which turn are we on
         pass

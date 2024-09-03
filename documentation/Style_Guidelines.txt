@@ -46,5 +46,6 @@ The logs shall start with the date and time to the second in the format:
     YYYY-MM-DD HH:MM:SS
 
 Logging messages shall begin with the function header of whatever function made them
-i.e. if logging from the function foo(bar, jar), then each log should start with
-the 
+i.e. if logging from the function Foo.foo(self, bar, jar), then each log should start with
+the string "Foo.foo(self, bar, jar): " and then contain the logging message.
+    Foo being the class that foo(self, bar, jar) is contained in
