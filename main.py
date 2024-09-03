@@ -77,7 +77,7 @@ def main():
         #ask the players to switch who is playing
         #ui.draw_switch_screen()
         #saves the coordinates the user shot at
-        shot = UIDriver.wait_for_shot()
+        shot = ui.wait_for_shot()
         result = gs.shoot(shot) #shoot your shot baby
         if result =='gameover':
             gameover = True

@@ -112,6 +112,18 @@ class UIDriver:
         @return: pandas array representing current ship placements"""
         pass
 
+    def draw_switch_screen(self, end_player):
+        """Screen to ask the players to switch the laptop"""
+        pass
+
+    def draw_shot_result(self, result):
+        """draws either miss, hit, sunk screen based on result"""
+        pass
+
+    def draw_gameover(self):
+        """obvious"""
+        pass
+
     def run(self):
         """Main loop for running the UI"""
         # start with main menu
