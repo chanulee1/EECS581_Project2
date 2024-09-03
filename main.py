@@ -18,13 +18,13 @@ def main_menu_loop():
     pass
 
 def main():
-    #clear_log()
+    clear_log()
     ui = UIDriver()
     gs = GameState()
     log("This is a test log!")
 
     # do main menu handling
-    main_menu_loop()
+    main_menu_output = ui.draw_main_menu()
 
 
     # main menu options: 
