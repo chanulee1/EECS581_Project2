@@ -75,17 +75,16 @@ def main():
     gameover = False
     while not gameover:
         #ask the players to switch who is playing
-        #ui.draw_switch_screen()
+        ui.draw_switch_screen(gs.turn)
         #saves the coordinates the user shot at
         shot = ui.wait_for_shot()
         result = gs.shoot(shot) #shoot your shot baby
         if result =='gameover':
             gameover = True
         else:
-            pass
-            #ui.draw_shot_result(result)
+            ui.draw_shot_result(result)
 
-    #ui.draw_gameover
+    ui.draw_gameover
     # play again feature?
 
     # close the window
