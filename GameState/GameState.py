@@ -77,7 +77,10 @@ class GameState:
         #print(self.player_one_board.loc[2, 'A'])
 
     def fire(self, coord):
-        """Main method used for players to 
+        """Main method used to calculate the results of each player firing at a given coord
+        Both returns a string to easily tell what happened and updates gamestate
+        @param (int, string) coord: The coords are a mix of an int and a string and represent the space the active player is shooting at
+        @return string: Returns a string representing the action that happened (and updates gamestate). "miss" "hit" "gameover" "sunk #" are all possible outputs.
         """
         # returns a string "hit", "miss", "gameover"
         # updates game board (p1/p2's) accordingly
@@ -112,7 +115,7 @@ class GameState:
                 opponent_board.loc[coord[0], coord[1]] = "M"
 
                 # Swaps the turn
-                self.turn = 2 if self.turn == 1 else 1
+                self.turn = 2 if (self.turn == 1) else 1
 
                 # Returns the "miss" status of the shot
                 return "miss"
@@ -132,7 +135,7 @@ class GameState:
                 opponent_ship_segments -= 1
 
                 # Swaps whose turn it is
-                self.turn = 2 if self.turn == 1 else 1
+                self.turn = 2 if (self.turn == 1) else 1
 
                 # Checks the opponent's board to see if there are any more of unhit versions of the target that was hit. 
                 # This works for detecting sunk ships since there aren't multiple of the same length ships.
@@ -142,19 +145,111 @@ class GameState:
                     return "hit"
                 
                 else:
+
                     # Returns "sunk #" where # is the length of the ship that was sunk. Again this works well since there is only 1 ship of each length.
                     return f"sunk {opponent_board.loc[coord[0], coord[1]][0]}"
                     
             # The target was not any of those, which, assuming no issues with board creation, should be a spot already targeted previously. This shouldn't be possible.
             case _:
+
                 # Logs the error in coordinate passing using the Logger.py
                 log(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
                 # Raises an ValueError to be handled
                 raise ValueError(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
 
+
     def add_ship(self, start, end):
+        """Main method used to add ships to board
+        Does error checking, but does not handle it
+        The ship is created between the two points.
+        Uses the self.player to determine who is placing ships currently.
+        @param (int, string) start: The start coordinate for the start of the ship
+        @param (int, string) end: The ending coordinate for the end of the ship
+        @return Bool: Returns True if the ship was created
+        """
         # adds a ship between start and end
         # needs to check if the ship is a line
         # needs to increment the total of ship segments for the player that placed it
-        #
-        pass
+
+        # ERROR CHECKING SECTION
+        # Error to check for: Not straight line, not within 10x10, and overlapping (this will be done later to avoid recomputing things) [maybe more than 5 in length is error, or maybe its scalability]
+
+        # Check Straight Line
+        # Checks if the two coords passed are on the same row or same column to ensure a straight line
+        if not ((start[0] == end[0]) or (start[1] == end[1])): 
+            log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that are not in a straight line")
+            raise ValueError(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that are not in a straight line")
+
+        # Check that all values are within the 10x10
+        # As long as both ends are within the 10x10, all values must be
+        if not (verify_coord(start) and verify_coord(end)):
+            log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in a ship outside of the board's bounds")
+            raise IndexError(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in a ship outside of the board's bounds")
+
+        # Calculate Length
+
+        # If the points are in the same row
+        if start[0] == end[0]:
+            
+            #calculate using letters (and ASCII)
+            ship_length = abs(ord(start[1]) - ord(end[1])) + 1
+        
+        # If the points are in the same column
+        else:
+
+            # calculate using nums (rows)
+            ship_length = abs(start[0] - end[0]) + 1
+            
+        # Place Ship
+
+        # Sets the "current_ship_count" var so we can edit it later to keep track of the ships out there
+        if self.turn == 1:
+            # Player 1 is placing ships right now
+            current_ship_count = self._player_one_ships
+            current_board = self.player_one_board
+        else:
+            # Player 2 is placing ships right now
+            current_ship_count = self._player_two_ships
+            current_board = self.player_two_board
+
+        row = start[0] # Ints
+        column = start[1] # Strings
+
+        for _ in range(ship_length):
+            
+            # Checks to make sure we're not overlapping
+            if current_board.loc[row, column] == '~':
+                # Sets the position to the ship length number
+                current_board.loc[row, column] = ship_length
+                # Ups the current ship count
+                current_ship_count += 1
+
+            # If there is already a ship (or something else that isn't water)
+            else:
+                # Typical error procedure
+                log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in overlapping ships at ({row},{column})")
+                raise ValueError(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in overlapping ships at ({row},{column})")
+
+            # If they are the same row, then we need to increment the letters
+            if start[0] == end[0]:
+
+                # If our current column is less than the ending column
+                if ord(column) < ord(end[1]):
+                    column = str(ord(column) + 1)
+
+                # If we're going backwards
+                else:
+                    column = str(ord(column) - 1)
+            
+            # If they are in the same column, then we need to increment the nums
+            else:
+
+                # If the current row is lower than the ending row we add 1
+                if row < end[0]:
+                    row += 1
+
+                # If the current row is higher than the end, we're going backwards and should subtract to get to the end
+                else:
+                    row -= 1
+
+        return True
