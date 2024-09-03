@@ -2,7 +2,8 @@
 UIDriver.py
 Authors:
     - Pierce Lane
-    - First Last
+    - Holden Vail
+    - Katharine Swann
 Date: 9/2/2024
 
 Purpose: drives the UI of the battleship game
