@@ -12,6 +12,7 @@ Inputs: N/A (-- could add command line args if we wanted to have a headless vers
 from UI.UIDriver import *
 from GameState.GameState import *
 from Logger.Logger import *
+from time import sleep
 
 def main_menu_loop():
     # should wait for inputs from the main menu in UIDriver
@@ -25,32 +26,42 @@ def main():
     # create the game state object
     gs = GameState()
 
-    ## do main menu
-    # draw the title Battleship
-    ui.draw_title(True)
+    ## do main menu -- this should be a function call
+    # draw the title "Battleship"
+    ui.draw_title()
     # draw the ship number selector
-    ui.draw_ship_nums(True, 3)
+    ui.draw_ship_nums()
     # draw the ship box
-    ui.draw_ship_box(True)
+    ui.draw_ship_box()
+    # draw the go button
+    ui.draw_go()
 
-    # start with the number of ships each side gets
-    num_ships = ui.get_num_ships()
+    # spin until the "GO" button is pressed
+    ui.wait_for_go()
 
     # undraw the title
-    ui.draw_title(False)
+    ui.draw_title(do_delete=True)
     # undraw the ship number selector
-    ui.draw_ship_nums(False)
+    ui.draw_ship_nums(do_delete=True)
 
     # draw player 1's laptop
     ui.draw_laptop(1)
-    # get the placement of p1's ships
-    p1ships = ui.get_ships(1)
+    # wait for them to press the GO button
+    ui.wait_for_go()
+    # get their ship placements
+    p1ships = ui.get_ship_placements()
 
     # draw player 2's laptop
-        # this should account for the animation between them
     ui.draw_laptop(2)
-    # get the placement of p2's ships
-    p2ships = ui.get_ships(2)
+    # wait for them to press the GO button
+    ui.wait_for_go()
+    # get their ship placements
+    p2ships = ui.get_ship_placements()
+    
+    sleep(2)
+    """Notes:
+    - I don't immediately see a way for UI to be able to not track ship placements
+        - i.e. I think UI will need to know the pandas data type"""
 
     # finally, tell GameState what we've found out
 
