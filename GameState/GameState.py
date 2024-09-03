@@ -74,7 +74,6 @@ class GameState:
         # Internal tracking int to track how many ship spaces player two has remaining
         self._player_two_ships = 0
 
-        #print(self.player_one_board.loc[2, 'A'])
 
     def fire(self, coord):
         """Main method used to calculate the results of each player firing at a given coord
@@ -100,13 +99,9 @@ class GameState:
         if self.turn == 1:
             # If it's player 1's turn, then player two's board is the "opponent's board"
             opponent_board = self.player_two_board
-            # if it's player 1's turn, the ships we're tracking is the opponent's to see if player 2 may win
-            opponent_ship_segments = self._player_two_ships
         else:
             # If it's player 2's turn, then player two's board is the "opponent's board"
             opponent_board = self.player_one_board
-            # if it's player 2's turn, the ships we're tracking is the opponent's to see if player 1 may win
-            opponent_ship_segments = self._player_one_ships
 
         match opponent_board.loc[coord[0], coord[1]]:
             # The target was empty water
@@ -124,15 +119,23 @@ class GameState:
             case '1' | '2' | '3' | '4' | '5':
                 
                 # Checks if this segement is the opponent only has this final ship segment
-                if opponent_ship_segments == 1:
-                    # If so, returns that the game is over
-                    return "gameover"
+                if self.turn == 1:
+                    if self._player_two_ships == 1:
+                        # If so, returns that the game is over
+                        return "gameover"
+                else:
+                   if self._player_one_ships == 1:
+                        # If so, returns that the game is over
+                        return "gameover" 
 
                 # Marks the spot as "hit" by adding a "*" to the end of the number
                 opponent_board.loc[coord[0], coord[1]] = opponent_board.loc[coord[0], coord[1]] + "*"
                 
                 # Removes one ship segment from the counter
-                opponent_ship_segments -= 1
+                if self.turn == 1:
+                    self._player_two_ships -= 1
+                else:
+                    self._player_one_ships -= 1
 
                 # Swaps whose turn it is
                 self.turn = 2 if (self.turn == 1) else 1
@@ -205,11 +208,9 @@ class GameState:
         # Sets the "current_ship_count" var so we can edit it later to keep track of the ships out there
         if self.turn == 1:
             # Player 1 is placing ships right now
-            current_ship_count = self._player_one_ships
             current_board = self.player_one_board
         else:
             # Player 2 is placing ships right now
-            current_ship_count = self._player_two_ships
             current_board = self.player_two_board
 
         row = start[0] # Ints
@@ -222,7 +223,10 @@ class GameState:
                 # Sets the position to the ship length number
                 current_board.loc[row, column] = str(ship_length)
                 # Ups the current ship count
-                current_ship_count += 1
+                if self.turn == 1:
+                    self._player_one_ships += 1
+                else:
+                    self._player_two_ships += 1
 
             # If there is already a ship (or something else that isn't water)
             else:
