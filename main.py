@@ -1,21 +1,30 @@
 """
 main.py
 Authors:
+    - Pierce Lane
     - First Last
-    - First Last
-Date:
+Date: 9/2/2024
 
-Purpose:
-Inputs:
-Outputs:
+Purpose: driver file for the battleship game
+Inputs: N/A (-- could add command line args if we wanted to have a headless version)
 """
+
 from UI.UIDriver import *
 from GameState.GameState import *
+from Logger.Logger import *
+
+def main_menu_loop():
+    # should wait for inputs from the main menu in UIDriver
+    pass
 
 def main():
-    # make a UIDriver object
-    # make a GameState object
+    #clear_log()
+    ui = UIDriver()
+    gs = GameState()
+    log("This is a test log!")
+
     # do main menu handling
+    main_menu_loop()
 
 
     # main menu options: 

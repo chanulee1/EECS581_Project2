@@ -1,0 +1,50 @@
+Note: Documentation doesn't need to follow these guidelines
+
+--- IDENTIFIER NAMES ---
+Function and variable names shall be in lower_snake_case
+Class names shall be in UpperCamelCase (because COMPROMISE!)
+
+
+--- FILE HEADERS ---
+Files shall start with a header comment of the format:
+"""
+FileName.py
+Authors:
+    - First Last
+    - First Last
+Date: MM/DD/YYYY
+
+Purpose: brief description of purpose of the file
+Notes: optional, any additional notes not encompassed by 
+"""
+
+
+--- FUNCTION HEADERS ---
+Functions shall have a multi-line comment with:
+    - A description of the function
+    - @param <type> <name>: description of parameter
+        - one for each argument the function can take
+    - @return <type>: description of return
+    - @raise <error>: description of raised errors
+
+The @param, @return, and @raise lines should only be included as needed,
+i.e. if there are no function parameters, do not have any @param lines.
+
+For instance:
+
+def to_upper(text, idx):
+    """Will make the character in text at index idx uppercase
+    @param string text: text to be uppercased
+    @param int index: 0-based index of character in text to make upperse
+    @return bool: returns True on success, returns False on failure
+    @raise IndexError: raises IndexError if idx is out of bounds in text"""
+
+
+--- DEBUG LOGGING ---
+Debug logging shall be sent to a log file, log.txt
+The logs shall start with the date and time to the second in the format:
+    YYYY-MM-DD HH:MM:SS
+
+Logging messages shall begin with the function header of whatever function made them
+i.e. if logging from the function foo(bar, jar), then each log should start with
+the 

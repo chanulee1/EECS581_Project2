@@ -1,29 +1,28 @@
 """
 UIDriver.py
 Authors:
+    - Pierce Lane
     - First Last
-    - First Last
-Date:
+Date: 9/2/2024
 
-Purpose:
-Inputs:
-Outputs:
+Purpose: drives the UI of the battleship game
 """
+
 class UIDriver:
     def __init__(self):
         # should create the window and draw the main menu
         pass
 
-    def draw(GS, do_transition):
+    def draw(self, GS, do_transition):
         # draws the game state it is passed, should return True if successful
         #  will update which buttons are on depending on GS 
         pass
 
-    def draw_main_menu():
+    def draw_main_menu(self):
         # draws main menu, will be run on initialization
         pass
 
-    def wait_for_shot():
+    def wait_for_shot(self):
         # waits for UI input and returns what square was clicked.
         #  buttons being on/off is handled in draw()
         pass
