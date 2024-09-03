@@ -7,8 +7,11 @@ Date: 9/2/2024
 
 Purpose: does the backend driving of the battle ship game state
 """
+from Logger.Logger import *
+
 class GameState:
     def __init__(self):
+        log("I'm in GameState!")
         # pandas array for each player's board
         # which turn are we on
         pass
@@ -22,6 +25,3 @@ class GameState:
         # adds a ship between start and end
         # needs to check if the ship is a line
         pass
-
-if __name__ == "__main__":
-    print("Put debug code here")

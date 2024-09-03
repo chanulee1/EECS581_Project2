@@ -7,9 +7,11 @@ Date: 9/2/2024
 
 Purpose: drives the UI of the battleship game
 """
+from Logger.Logger import *
 
 class UIDriver:
     def __init__(self):
+        log("I'm in UIDriver!")
         # should create the window and draw the main menu
         pass
 
