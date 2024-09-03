@@ -139,7 +139,7 @@ class GameState:
 
                 # Checks the opponent's board to see if there are any more of unhit versions of the target that was hit. 
                 # This works for detecting sunk ships since there aren't multiple of the same length ships.
-                if opponent_board.isin(opponent_board.loc[coord[0], coord[1]][0]).any().any():
+                if opponent_board.isin([opponent_board.loc[coord[0], coord[1]][0]]).any().any():
                     
                     #Returns "hit" when the coord has a ship, but doesn't cause a sink
                     return "hit"
@@ -220,7 +220,7 @@ class GameState:
             # Checks to make sure we're not overlapping
             if current_board.loc[row, column] == '~':
                 # Sets the position to the ship length number
-                current_board.loc[row, column] = ship_length
+                current_board.loc[row, column] = str(ship_length)
                 # Ups the current ship count
                 current_ship_count += 1
 
