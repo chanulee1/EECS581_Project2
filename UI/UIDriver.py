@@ -35,7 +35,7 @@ class UIDriver:
         self.window = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
 
         # define and set background color
-        self.bgcolor = (0, 161, 224)
+        self.bgcolor = (0, 0, 100)
         self.window.fill(self.bgcolor) # royal blue background
 
         # sets the title of the window
