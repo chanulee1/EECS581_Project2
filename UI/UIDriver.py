@@ -69,9 +69,9 @@ class UIDriver:
     def draw_go(self, do_delete=False):
         """Draws the GO button
         @param do_delete=False: boolean, if True will remove the element"""
+        #need to adjust for do_delete and not appearing on screen when main is run
         rect_color = (255, 255, 255)
-        
-        # Get window dimensions
+    
         window_width, window_height = self.window.get_size()
 
         # Button size as a percentage of the window size
@@ -80,18 +80,16 @@ class UIDriver:
 
         # Calculate position to center the button
         go_x = int(window_width * 0.5) - rect_width // 2
-        go_y = int(window_height * 0.4)  # Adjust as needed, 10% down from the top
+        go_y = int(window_height * 0.6)  #60% down from the top
 
-        # Draw the button rectangle
         pygame.draw.rect(self.window, rect_color, (go_x, go_y, rect_width, rect_height))
 
-        # Draw text
-        font_size = int(rect_height * 0.7)  # Font size is 70% of the button height
+        font_size = int(rect_height * 0.7)  #font = 70% of text
         font = pygame.font.SysFont("Arial", font_size)
         go_button = "GO"
         text_surface = font.render(go_button, True, (0, 0, 0))
 
-        # Position the text in the center of the button
+        #center text in button
         text_rect = text_surface.get_rect(center=(go_x + rect_width // 2, go_y + rect_height // 2))
         self.window.blit(text_surface, text_rect)
 
