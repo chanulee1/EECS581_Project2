@@ -69,7 +69,36 @@ class UIDriver:
     def draw_go(self, do_delete=False):
         """Draws the GO button
         @param do_delete=False: boolean, if True will remove the element"""
-        pass
+        rect_color = (255, 255, 255)
+        
+        # Get window dimensions
+        window_width, window_height = self.window.get_size()
+
+        # Button size as a percentage of the window size
+        rect_width = int(window_width * 0.2)   # 20% of the window's width
+        rect_height = int(window_height * 0.1)  # 10% of the window's height
+
+        # Calculate position to center the button
+        go_x = int(window_width * 0.5) - rect_width // 2
+        go_y = int(window_height * 0.4)  # Adjust as needed, 10% down from the top
+
+        # Draw the button rectangle
+        pygame.draw.rect(self.window, rect_color, (go_x, go_y, rect_width, rect_height))
+
+        # Draw text
+        font_size = int(rect_height * 0.7)  # Font size is 70% of the button height
+        font = pygame.font.SysFont("Arial", font_size)
+        go_button = "GO"
+        text_surface = font.render(go_button, True, (0, 0, 0))
+
+        # Position the text in the center of the button
+        text_rect = text_surface.get_rect(center=(go_x + rect_width // 2, go_y + rect_height // 2))
+        self.window.blit(text_surface, text_rect)
+
+        log("Go Button Drawn")
+
+        # Update the display to show the button
+        pygame.display.update()
 
     def wait_for_go(self):
         """Waits by spinning until the the GO button is pressed"""
@@ -172,7 +201,6 @@ class UIDriver:
         button_x = rect_x + rect_width + 20
         button_y = rect_y + rect_height/2 - button_height/2 + 30  # lower the button by 50 pixels
         pygame.draw.polygon(self.window, button_color, [(button_x, button_y), (button_x + button_width/2, button_y + button_height), (button_x + button_width, button_y)], 0)
-
 
         # update the display
         pygame.display.update()

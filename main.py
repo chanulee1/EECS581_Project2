@@ -2,7 +2,7 @@
 main.py
 Authors:
     - Pierce Lane
-    - First Last
+    - Chase Horner
 Date: 9/2/2024
 
 Purpose: driver file for the battleship game
