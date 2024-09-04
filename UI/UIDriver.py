@@ -124,14 +124,21 @@ class UIDriver:
         """obvious"""
         pass
 
-    def run(self):
-        """Main loop for running the UI"""
-        # start with main menu
-        self.draw_main_menu()
+    def draw_main_menu(self):
+        """Draws the main menu and handles events"""
+        # draw stuff here
+        
+
+
 
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # handle mouse click events here, e.g., check if the go button is clicked
+                    pass
+
         pygame.quit()
+

@@ -26,7 +26,8 @@ def main():
     # create the game state object
     gs = GameState()
 
-    ## do main menu -- this should be a function call
+    ## do main menu
+    ui.draw_main_menu()
     # draw the title "Battleship"
     ui.draw_title()
     # draw the ship number selector
