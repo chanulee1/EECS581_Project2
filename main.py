@@ -85,10 +85,11 @@ def main():
         else:
             ui.draw_shot_result(result)
 
-    ui.draw_gameover
+    ui.draw_gameover()
     # play again feature?
 
     # close the window
+    pygame.quit()
     pass
 
 if __name__ == "__main__":
