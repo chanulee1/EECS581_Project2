@@ -158,7 +158,7 @@ class UIDriver:
         """obvious"""
         pass
 
-    def draw_main_menu(self):
+    def draw_main_menu(self, ships_choice = 1):
         """Draws the main menu and handles events"""
 
         # draw the large title
@@ -179,34 +179,58 @@ class UIDriver:
 
         # draw the text
         font = pygame.font.SysFont("Arial", 50)
-        ships_choice = "1"
-        text_surface = font.render(ships_choice, True, (0, 0, 0))
+        text_surface = font.render(str(ships_choice), True, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
         self.window.blit(text_surface, text_rect)
 
-        # draw ship increase button
-        button_color = (255, 255, 255)
-        button_width = 50
-        button_height = 50
-        button_x = rect_x + rect_width + 20
-        button_y = rect_y + rect_height/2 - button_height/2 - 30  # raise the button by 50 pixels
-        pygame.draw.polygon(self.window, button_color, [(button_x, button_y + button_height), (button_x + button_width/2, button_y), (button_x + button_width, button_y + button_height)], 0)
+       # Draw ship increase button
+        increase_button_color = (255, 255, 255)
+        increase_button_width = 50
+        increase_button_height = 50
+        increase_button_x = rect_x + rect_width + 20
+        increase_button_y = rect_y + rect_height / 2 - increase_button_height / 2 - 30
+        pygame.draw.polygon(self.window, increase_button_color, [
+            (increase_button_x, increase_button_y + increase_button_height),
+            (increase_button_x + increase_button_width / 2, increase_button_y),
+            (increase_button_x + increase_button_width, increase_button_y + increase_button_height)
+        ], 0)
 
-        # draw ship decrease button
-        button_color = (255, 255, 255)
-        button_width = 50
-        button_height = 50
-        button_x = rect_x + rect_width + 20
-        button_y = rect_y + rect_height/2 - button_height/2 + 30  # lower the button by 50 pixels
-        pygame.draw.polygon(self.window, button_color, [(button_x, button_y), (button_x + button_width/2, button_y + button_height), (button_x + button_width, button_y)], 0)
+        # Draw ship decrease button
+        decrease_button_color = (255, 255, 255)
+        decrease_button_width = 50
+        decrease_button_height = 50
+        decrease_button_x = rect_x + rect_width + 20
+        decrease_button_y = rect_y + rect_height / 2 - decrease_button_height / 2 + 30
+        pygame.draw.polygon(self.window, decrease_button_color, [
+            (decrease_button_x, decrease_button_y),
+            (decrease_button_x + decrease_button_width / 2, decrease_button_y + decrease_button_height),
+            (decrease_button_x + decrease_button_width, decrease_button_y)
+        ], 0)
 
-        # update the display
+        # Update the display
         pygame.display.update()
 
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    pygame.quit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_x, mouse_y = event.pos
+
+                    # Check if increase button is clicked
+                    if (increase_button_x <= mouse_x <= increase_button_x + increase_button_width and
+                            increase_button_y <= mouse_y <= increase_button_y + increase_button_height):
+                        ships_choice = (ships_choice + 1 if ships_choice < 5 else 1)
+                        self.draw_main_menu(ships_choice)  # Redraw to show updated choice
+
+                    # Check if decrease button is clicked
+                    if (decrease_button_x <= mouse_x <= decrease_button_x + decrease_button_width and
+                            decrease_button_y <= mouse_y <= decrease_button_y + decrease_button_height):
+                        ships_choice = (ships_choice - 1 if ships_choice > 1 else 5)
+                        self.draw_main_menu(ships_choice)  # Redraw to show updated choice
+            # Update the display
+                pygame.display.update()
         pygame.quit()
 
