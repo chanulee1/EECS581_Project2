@@ -28,34 +28,43 @@ def main():
 
     ## do main menu
     ui.draw_main_menu()
-    # draw the title "Battleship"
-    ui.draw_title()
     # draw the ship number selector
     ui.draw_ship_nums()
     # draw the ship box
-    ui.draw_ship_box()
+    ui.draw_ship_box() #Not sure what this is here for yet
     # draw the go button
     ui.draw_go()
 
     # spin until the "GO" button is pressed
-    ui.wait_for_go()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+                #Quits if event type is quit
+                if event.type == pygame.QUIT:
+                    pygame.quit()
 
-    # undraw the title
-    ui.draw_title(do_delete=True)
-    # undraw the ship number selector
-    ui.draw_ship_nums(do_delete=True)
+                #Stores the mouse position for every click to determine if a button was clicked
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_x, mouse_y = event.pos
 
+                    # Check if increase button is clicked, which is determined by is_button_clicked function
+                    ui.up_button_clicked(mouse_x, mouse_y)
+                    ui.down_button_clicked(mouse_x, mouse_y)
+                    waiting = not ui.go_clicked(mouse_x, mouse_y)
+
+    ui.erase()
+    sleep(2)
     # draw player 1's laptop
     ui.draw_laptop(1)
     # wait for them to press the GO button
-    ui.wait_for_go()
+    ui.go_clicked()
     # get their ship placements
     p1ships = ui.get_ship_placements()
 
     # draw player 2's laptop
     ui.draw_laptop(2)
     # wait for them to press the GO button
-    ui.wait_for_go()
+    ui.go_clicked()
     # get their ship placements
     p2ships = ui.get_ship_placements()
     
