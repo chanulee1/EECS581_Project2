@@ -2,6 +2,7 @@
 UIDriver.py
 Authors:
     - Chase Horner
+    - Katharine Swann
 Date: 9/5/2024
 
 Purpose: Creates a draggable boat object
