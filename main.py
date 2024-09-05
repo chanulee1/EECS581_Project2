@@ -52,7 +52,11 @@ def main():
                     waiting = not ui.go_clicked(mouse_x, mouse_y)
 
     ui.erase()
-    sleep(2)
+    ui.draw_ship_box()
+    ui.draw_switch_screen(2)
+    ui.draw_ship_box()
+
+    ui.draw_gameover()
     # draw player 1's laptop
     ui.draw_laptop(1)
     # wait for them to press the GO button
@@ -82,20 +86,6 @@ def main():
     # get their ship placements
     p2ships = ui.get_ship_placements()
     
-    sleep(2)
-    """Notes:
-    - I don't immediately see a way for UI to be able to not track ship placements
-        - i.e. I think UI will need to know the pandas data type"""
-
-    # finally, tell GameState what we've found out
-
-    # then start the main loop
-    # main loop:
-        # UIDriver.wait_for_shot()
-        # GameState.fire()
-            # check for game over here
-        # UIDriver.draw() -- might need another function for drawing game over screen
-
     gameover = False
     while not gameover:
         #ask the players to switch who is playing
