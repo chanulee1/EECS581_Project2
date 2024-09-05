@@ -5,6 +5,7 @@ Authors:
     - Holden Vail
     - Katharine Swann
     - Chase Horner
+    - Michael Stang
 Date: 9/2/2024
 
 Purpose: drives the UI of the battleship game
@@ -186,6 +187,48 @@ class UIDriver:
         Will show an animation of the laptop being pulled up
         @param player_number: integer (1, 2) representing player's laptop to display"""
         pass
+
+    def draw_grids(self):
+        """A test function used to draw two grids, we can use these for laptops if we want, but it gives a start"""
+        
+        # Declares it a 10x10
+        GRID_ROWS = 10
+        GRID_COLS = 10
+
+        # Size of each box
+        GRID_SIZE = 30
+
+        # Loops to create a grid
+        for row in range(GRID_ROWS):
+            for col in range(GRID_COLS):
+                rect = pygame.Rect((self.width/2) - (GRID_SIZE * 5) + col * GRID_SIZE, (self.height/2) + (self.height/4) - (GRID_SIZE * 5) + row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
+                pygame.draw.rect(self.window, (0, 100, 255), rect, 1)
+        
+        # Updates view
+        pygame.display.update()
+    
+    def tile_clicked(self, mouse_x, mouse_y):
+        """Turns a mouse x and mouse y into grid coordinates for bottom grid
+        @param int mouse_x: The x position of where the click occured
+        @param int mouse_y: The y position of where the click occured
+        @return (int, string): Returns a standard coord for this program"""
+        TILE_SIZE = 30
+
+        # Calculates x position by using the mouse position and adjusting for where the grid is.
+        x_pos = mouse_x - ((self.width/2) - (TILE_SIZE * 5))
+
+        # Calculates y position by using mouse position adjusting for where grid is up and down.
+        y_pos = mouse_y - ((self.height * 3/4) - (TILE_SIZE * 5))
+
+        # Turns x and y position into X,Y positions
+        x_coord = int((x_pos // 30) + 1)
+        y_coord = int((y_pos // 30) + 1)
+
+        # Conversion dictonary to help turn ints int letters
+        conversion = {"1": "A", "2": "B", "3": "C", "4": "D", "5": "E", "6": "F", "7": "G", "8": "H", "9": "I", "10": "J"}
+
+        # Returns the coord of the click in our format for coords (row int, column letter string)
+        return (y_coord, conversion[str(x_coord)])
 
     def get_ship_placements(self):
         """Gets the pandas array representing the current laptop's ship placements
