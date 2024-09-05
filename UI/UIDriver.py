@@ -349,13 +349,13 @@ class UIDriver:
 
     def draw_gameover(self):
         """obvious"""
-        self.window.fill(self.bgcolor)        
-        font = pygame.font.SysFont("Arial", 240, bold=True)
-        text_surface = font.render("GAME OVER.", True, (255, 0, 0))
+        self.window.fill(self.bgcolor)
+        font_size = int(self.height * 0.3) #adjusts font size to 0.3 of height       
+        font = pygame.font.SysFont("Arial", font_size, bold=True) #set font with size
+        text_surface = font.render("GAME OVER.", True, (255, 0, 0)) #color = red rn
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
-        self.window.blit(text_surface, text_rect)
-        pygame.display.update()
-
+        self.window.blit(text_surface, text_rect) #draw the text
+        pygame.display.update()  #update the display
 
     def draw_main_menu(self):
         """Draws the main menu and handles events"""
