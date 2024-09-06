@@ -15,6 +15,7 @@ def create_blank_board():
     Will create and return a blank 10x10 board filled with '~'s.
     The rows are denoted by the numbers 1-10 and columns denoted by the letters A-J
     The entire data structure is represented using a DataFrame from the Pandas library
+
     @return DataFrame: Returns a DataFrame that represents the board, it is filled with ~.
     """
     #Using Panda functionaility, creating a blank 10x10 board full of ~ 
@@ -27,6 +28,7 @@ def verify_coord(coord: tuple[int, str]):
     coord[0] = Int/Row
     coord[1] = String/Column
     This is slightly backwards from the usual order the elements are said in Battleship, but I'm sticking with it this way to match Panda's conventions
+
     @param (int, string) coord: Given a tuple with an int representing the row and a string representing the column
     @return Bool: Returns True if it is a valid position and False if it is not
     """
@@ -57,6 +59,7 @@ class GameState:
     def fire(self, coord: tuple[int, str]):
         """Main method used to calculate the results of each player firing at a given coord
         Both returns a string to easily tell what happened and updates gamestate
+        
         @param (int, string) coord: The coords are a mix of an int and a string and represent the space the active player is shooting at
         @return string: Returns a string representing the action that happened (and updates gamestate). "miss" "hit" "gameover" "sunk #" are all possible outputs.
         @raise IndexError: If the coordinates are outside the playable grid
@@ -140,6 +143,7 @@ class GameState:
         Does error checking, but does not handle it
         The ship is created between the two points.
         Uses the self.turn to determine who is placing ships currently.
+        
         @param (int, string) start: The start coordinate for the start of the ship
         @param (int, string) end: The ending coordinate for the end of the ship
         @return Bool: Returns True if the ship was created

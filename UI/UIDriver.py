@@ -73,6 +73,7 @@ class UIDriver:
     def wait_for_go(self, ship_num_menu = False):
         """Waits for the go button to be pressed.
         Assumes that the go button exists
+
         @param ship_num_menu = False: bool that adds some extra checks in the ship num menu"""
         waiting = True
         while waiting:
@@ -93,6 +94,7 @@ class UIDriver:
 
     def draw_go(self, surface = None):
         """Draws the GO button
+
         @param do_delete=False: boolean, if True will remove the element"""
         #need to adjust for do_delete and not appearing on screen when main is run
         rect_color = (121, 219, 172)
@@ -131,6 +133,7 @@ class UIDriver:
     def go_clicked(self, mouse_x, mouse_y):
         """
         Check if Go button is clicked. To be used in an if statement.
+
         @param mouse_x: x-coordinate of the mouse click
         @param mouse_y: y-coordinate of the mouse click
         @return: True if the Go button was clicked, False otherwise
@@ -151,6 +154,7 @@ class UIDriver:
     
     def draw_title(self):
         """Draws the title text
+
         @param do_delete=False: boolean, if True will remove the element"""
         # first set font
         font = pygame.font.SysFont("Comic Sans MS", 300)
@@ -166,6 +170,7 @@ class UIDriver:
 
     def draw_ship_nums(self):
         """Draws the ship number edit control
+        
         @param do_delete=False: boolean, if True will remove the element"""
         #Draw spindown selector
         rect_color = (121, 219, 172)
@@ -285,6 +290,7 @@ class UIDriver:
     def draw_laptop(self, player_number):
         """Draws the laptop associated with the player number given.
         Will show an animation of the laptop being pulled up
+
         @param player_number: integer (1, 2) representing player's laptop to display"""
         pass
 
@@ -309,6 +315,7 @@ class UIDriver:
     
     def tile_clicked(self, mouse_x, mouse_y):
         """Turns a mouse x and mouse y into grid coordinates for bottom grid
+
         @param int mouse_x: The x position of where the click occured
         @param int mouse_y: The y position of where the click occured
         @return (int, string): Returns a standard coord for this program"""
@@ -332,11 +339,13 @@ class UIDriver:
 
     def get_ship_placements(self):
         """Gets the pandas array representing the current laptop's ship placements
+
         @return: pandas array representing current ship placements"""
         pass
 
     def do_text_screen(self, text):
         """Screen to ask the players to switch the laptop
+
         @param text: string of text to put on the screen"""
         self.erase()
 
@@ -363,7 +372,7 @@ class UIDriver:
         pass
 
     def draw_gameover(self):
-        """obvious"""
+        """Draws the gameover screen"""
         self.window.fill(self.bgcolor)
         font_size = int(self.height * 0.3) #adjusts font size to 0.3 of height       
         font = pygame.font.SysFont("Arial", font_size, bold=True) #set font with size

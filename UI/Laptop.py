@@ -19,6 +19,7 @@ class Tile:
 class Laptop:
     def __init__(self, player_number, screen_wid, screen_height, tile_size = 90):
         """Constructor for laptop class
+
         @param player_number: int (1, 2) tracks player number
         @param screen_wid: int tracking screen width
         @param screen_height: int tracking screen height

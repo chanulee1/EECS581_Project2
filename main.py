@@ -14,10 +14,6 @@ from GameState.GameState import *
 from Logger.Logger import *
 from time import sleep
 
-def main_menu_loop():
-    # should wait for inputs from the main menu in UIDriver
-    pass
-
 def main():
     # clear all logs
     clear_log()

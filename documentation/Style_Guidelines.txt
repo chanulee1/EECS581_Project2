@@ -34,6 +34,7 @@ For instance:
 
 def to_upper(text, idx):
     """Will make the character in text at index idx uppercase
+    
     @param string text: text to be uppercased
     @param int index: 0-based index of character in text to make upperse
     @return bool: returns True on success, returns False on failure
