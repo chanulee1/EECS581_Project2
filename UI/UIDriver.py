@@ -71,6 +71,9 @@ class UIDriver:
         pass
     
     def wait_for_go(self, ship_num_menu = False):
+        """Waits for the go button to be pressed.
+        Assumes that the go button exists
+        @param ship_num_menu = False: bool that adds some extra checks in the ship num menu"""
         waiting = True
         while waiting:
             for event in pygame.event.get():
@@ -429,6 +432,3 @@ class UIDriver:
         self.window.fill(self.bgcolor)
         pygame.display.update()
    
-
-
-
