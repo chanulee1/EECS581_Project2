@@ -15,6 +15,7 @@ import pygame
 # temp import
 from time import sleep
 from UI.TugBoat import *
+from UI.Laptop import *
 
 class UIDriver:
     def __init__(self):
@@ -267,6 +268,11 @@ class UIDriver:
                         dragged_object.dragging = False
                         dragged_object = None  
 
+                # On the correct keydown event, rotate the ship
+                if event.type == pygame.KEYDOWN:
+                    # rotation code goes here
+                    pass
+
             #Clear the screen with the background buffer
             self.window.blit(background, (0, 0))
 
@@ -285,14 +291,18 @@ class UIDriver:
             #Cap the frame rate
             self.clock.tick(60)
 
-
-
     def draw_laptop(self, player_number):
         """Draws the laptop associated with the player number given.
         Will show an animation of the laptop being pulled up
 
         @param player_number: integer (1, 2) representing player's laptop to display"""
-        pass
+        lap = Laptop(player_number, self.width, self.height, tile_size = 50)
+        for row in lap.grid:
+            for tile in row:
+                rect = pygame.Rect(tile.top_left[0], tile.top_left[1], lap.tile_size, lap.tile_size)
+                pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
+    
+        pygame.display.update()
 
     def draw_grids(self):
         """A test function used to draw two grids, we can use these for laptops if we want, but it gives a start"""
