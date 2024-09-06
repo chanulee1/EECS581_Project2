@@ -26,7 +26,7 @@ def main():
     # create the game state object
     gs = GameState()
 
-    ## do main menu
+    ## NUMBER OF SHIPS ##
     ui.draw_main_menu()
     # draw the ship number selector
     ui.draw_ship_nums()
@@ -35,61 +35,34 @@ def main():
     ui.draw_go()
 
     # spin until the "GO" button is pressed
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-                #Quits if event type is quit
-                if event.type == pygame.QUIT:
-                    pygame.quit()
+    ui.wait_for_go(ship_num_menu = True)
 
-                #Stores the mouse position for every click to determine if a button was clicked
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_x, mouse_y = event.pos
-
-                    # Check if increase button is clicked, which is determined by is_button_clicked function
-                    ui.up_button_clicked(mouse_x, mouse_y)
-                    ui.down_button_clicked(mouse_x, mouse_y)
-                    waiting = not ui.go_clicked(mouse_x, mouse_y)
-
+    ## SHIP PLACEMENTS ##
+    # start by erasing the UI and redrawing GO button
     ui.erase()
-    ui.draw_ship_box()
-    ui.draw_switch_screen(2)
-    ui.draw_ship_box()
-
-    ui.draw_gameover()
-    # draw player 1's laptop
+    # then draw the transition screen for p1
+    ui.do_text_screen("Player 1's Turn")
     ui.draw_laptop(1)
-    # wait for them to press the GO button
-    waiting = True
-    while waiting:
-            for event in pygame.event.get():
-                #Quits if event type is quit
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-
-                #Stores the mouse position for every click to determine if a button was clicked
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_x, mouse_y = event.pos
-
-                    # Check if increase button is clicked, which is determined by is_button_clicked function
-                    #waiting = not ui.go_clicked(mouse_x, mouse_y)
-                    log("Tile  Clicked: ui.tile_clicked(mouse_x, mouse_y)")
-
-    ui.go_clicked(mouse_x, mouse_y)
-    # get their ship placements
+    # draw their ship box and let them drag stuff
+    ui.draw_ship_box() # <-- this includes a wait_for_go kind of call
+    # store their ship placements
     p1ships = ui.get_ship_placements()
 
-    # draw player 2's laptop
+    # then draw the transition screen for p2
+    ui.do_text_screen("Player 2's Turn")
     ui.draw_laptop(2)
-    # wait for them to press the GO button
-    ui.go_clicked(mouse_x, mouse_y)
-    # get their ship placements
+    # draw their ship box and let them drag stuff
+    ui.draw_ship_box() # <-- this includes a wait_for_go kind of call
+    # store their ship placements
     p2ships = ui.get_ship_placements()
-    
+
+    ## MAIN LOOP ##
+    # draw the large "GAME START" text
+    ui.do_text_screen("GAME START!")
     gameover = False
     while not gameover:
         #ask the players to switch who is playing
-        ui.draw_switch_screen(gs.turn)
+        ui.do_text_screen(f"Player {gs.turn}'s Turn")
         #saves the coordinates the user shot at
         shot = ui.wait_for_shot()
         result = gs.shoot(shot) #shoot your shot baby
@@ -103,7 +76,6 @@ def main():
 
     # close the window
     pygame.quit()
-    pass
 
 if __name__ == "__main__":
     # parse command line args here if wanted

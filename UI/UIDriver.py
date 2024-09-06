@@ -70,6 +70,24 @@ class UIDriver:
         # buttons being on/off is handled in draw()
         pass
     
+    def wait_for_go(self, ship_num_menu = False):
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                    #Quits if event type is quit
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+
+                    #Stores the mouse position for every click to determine if a button was clicked
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_x, mouse_y = event.pos
+
+                        # Check if increase button is clicked, which is determined by is_button_clicked function
+                        if (ship_num_menu):
+                            self.up_button_clicked(mouse_x, mouse_y)
+                            self.down_button_clicked(mouse_x, mouse_y)
+                        waiting = not self.go_clicked(mouse_x, mouse_y)
+
     def draw_go(self, surface = None):
         """Draws the GO button
         @param do_delete=False: boolean, if True will remove the element"""
@@ -173,11 +191,11 @@ class UIDriver:
 
        #Draw ship increase button by calling draw_button function
         increase_button_center = (rect_x + rect_width + 50, rect_y)
-        self.draw_button(self.window, increase_button_center, 30, "▲", (2, 195, 154), (255, 255, 255))
+        self.draw_button(self.window, increase_button_center, 30, "+", (2, 195, 154), (255, 255, 255))
 
         #Draw ship decrease button
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
-        self.draw_button(self.window, decrease_button_center, 30, "▼", (2, 195, 154), (255, 255, 255))
+        self.draw_button(self.window, decrease_button_center, 30, "-", (2, 195, 154), (255, 255, 255))
 
     def draw_ship_box(self):
         """Draws the box containing the ships 
@@ -314,13 +332,14 @@ class UIDriver:
         @return: pandas array representing current ship placements"""
         pass
 
-    def draw_switch_screen(self, end_player):
-        """Screen to ask the players to switch the laptop"""
+    def do_text_screen(self, text):
+        """Screen to ask the players to switch the laptop
+        @param text: string of text to put on the screen"""
         self.erase()
 
         #Draw the large "Player __ Turn" Title
         font = pygame.font.SysFont("Arial", 100, bold=True)
-        text_surface = font.render(f"Player {end_player}'s Turn", True, (240, 243, 189))
+        text_surface = font.render(f"{text}", True, (240, 243, 189))
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
         text_rect.y -= 200  # move the title up
         self.window.blit(text_surface, text_rect)
@@ -330,19 +349,12 @@ class UIDriver:
         #Update the display
         pygame.display.update()
 
-        waiting = True
-        while waiting:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                #Stores the mouse position for every click to determine if a button was clicked
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_x, mouse_y = event.pos
-                    waiting = not self.go_clicked(mouse_x, mouse_y)
+        # wait for them to press GO
+        self.wait_for_go()
 
+        # then reset our whole screen
         self.erase()
-        return
-
+    
     def draw_shot_result(self, result):
         """draws either miss, hit, sunk screen based on result"""
         pass
