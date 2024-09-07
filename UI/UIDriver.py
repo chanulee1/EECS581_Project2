@@ -38,9 +38,17 @@ class UIDriver:
         # initializes the window using the previously calculated sizes
         self.window = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
 
-        # define and set background color
-        self.bgcolor = (5, 102, 141)
-        self.window.fill(self.bgcolor) # royal blue background
+        '''# define and set background color
+        self.bgcolor = '#152636'
+        self.window.fill(self.bgcolor)'''
+
+        # trying with bg jpg
+        self.bg_image_path = "./assets/deep_ocean.jpg"
+        self.bg_image = pygame.image.load(self.bg_image_path)
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.width, self.height))
+        # Scale the image to fit window
+
+        self.window.blit(self.bg_image, (0, 0))
 
         # sets the title of the window
         pygame.display.set_caption("Battleship")
@@ -92,7 +100,7 @@ class UIDriver:
         """Draws the GO button
         @param do_delete=False: boolean, if True will remove the element"""
         #need to adjust for do_delete and not appearing on screen when main is run
-        rect_color = (121, 219, 172)
+        rect_color = (49, 190, 243) #light blue
         surface = (self.window if surface == None else surface)
         window_width, window_height = surface.get_size()
 
@@ -113,7 +121,7 @@ class UIDriver:
         font_size = int(rect_height * 0.7)  #font = 70% of text
         font = pygame.font.SysFont("Arial", font_size)
         go_button = "GO"
-        text_surface = font.render(go_button, True, (0, 0, 0))
+        text_surface = font.render(go_button, True, (255, 255, 255))
 
         #center text in button
         text_rect = text_surface.get_rect(center=(go_x + rect_width // 2, go_y + rect_height // 2))
@@ -146,13 +154,14 @@ class UIDriver:
         # Check if the mouse click is within the button's rectangle
         return (go_x <= mouse_x <= go_x + rect_width) and (go_y <= mouse_y <= go_y + rect_height)
     
-    def draw_title(self):
+    ''' commented out and didn't see a difference
+    def draw_title(self): #does this do anything??
         """Draws the title text
         @param do_delete=False: boolean, if True will remove the element"""
         # first set font
-        font = pygame.font.SysFont("Comic Sans MS", 300)
+        font = pygame.font.SysFont("Arial", 300)
         # create a surface to render
-        text_surface = font.render("Battleship", False, (255, 255, 255))
+        text_surface = font.render("BATTLESHIP", False, (0, 0, 0))
         # set the destination of the surface
         text_rect = text_surface.get_rect(center=(self.width/2, 200))
 
@@ -160,12 +169,13 @@ class UIDriver:
         self.window.blit(text_surface, text_rect)   
         # Update the display to reflect the changes
         pygame.display.update()
+    '''  #draw_main_menu() does above
 
     def draw_ship_nums(self):
         """Draws the ship number edit control
         @param do_delete=False: boolean, if True will remove the element"""
         #Draw spindown selector
-        rect_color = (121, 219, 172)
+        rect_color = (49, 190, 243) #light blue
         rect_width = 75
         rect_height = 100
         rect_x = int(self.width * 0.5)- rect_width // 2
@@ -179,23 +189,23 @@ class UIDriver:
 
         #Add the text of ship_count to the spindown selector rectangle
         font = pygame.font.SysFont("Arial", 50)
-        text_surface = font.render(str(self.ship_count), True, (0, 0, 0))
+        text_surface = font.render(str(self.ship_count), True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + rect_height // 2))
         self.window.blit(text_surface, text_rect)
 
         #Add the text instructions above spindown selector rectangle
         font = pygame.font.SysFont("Arial", 30)
-        text_surface = font.render(str("Select Number of Ships:"), True, (0, 0, 0))
+        text_surface = font.render(str("Select Number of Ships:"), True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(int(self.width * 0.5), int(self.height * 0.4)))
         self.window.blit(text_surface, text_rect)
 
        #Draw ship increase button by calling draw_button function
         increase_button_center = (rect_x + rect_width + 50, rect_y)
-        self.draw_button(self.window, increase_button_center, 30, "+", (2, 195, 154), (255, 255, 255))
+        self.draw_button(self.window, increase_button_center, 30, "+", (49, 190, 243), (255, 255, 255))
 
         #Draw ship decrease button
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
-        self.draw_button(self.window, decrease_button_center, 30, "-", (2, 195, 154), (255, 255, 255))
+        self.draw_button(self.window, decrease_button_center, 30, "-", (49, 190, 243), (255, 255, 255))
 
     def draw_ship_box(self):
         """Draws the box containing the ships 
@@ -369,19 +379,38 @@ class UIDriver:
         self.window.blit(text_surface, text_rect) #draw the text
         pygame.display.update()  #update the display
 
-    def draw_main_menu(self):
+    '''def draw_main_menu(self):
         """Draws the main menu and handles events"""
 
         #Draw the large "BATTLESHIP" Title
-        font = pygame.font.SysFont("Arial", 100, bold=True)
-        text_surface = font.render("BATTLESHIP", True, (240, 243, 189))
+        font = pygame.font.SysFont("Arial", 125, bold=True)
+        text_surface = font.render("BATTLESHIP", True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
-        text_rect.y -= 200  # move the title up
+        text_rect.y -= 230  # move the title up
+
         self.window.blit(text_surface, text_rect)
 
         #Update the display
-        pygame.display.update()
+        pygame.display.update()'''
 
+    def draw_main_menu(self):
+        font = pygame.font.SysFont("Arial", 125, bold=True) #font, size, bold
+        title_text = "BATTLESHIP" #title screen text
+        text_surface_white = font.render(title_text, True, (255, 255, 255)) #solid white
+        text_surface_black = font.render(title_text, True, (0, 0, 0))  #black outline
+    
+        text_rect = text_surface_white.get_rect(center=(self.width / 2, self.height / 2))
+        #get center for text
+        text_rect.y -= 230  #move the title up
+        for offset_x, offset_y in [(-2, -2), (-2, 2), (2, -2), (10, 10)]:
+            #adding outlines around, offset last corrdinate to mimic drop shadow bottom right
+            outline_rect = text_rect.copy()
+            outline_rect.x += offset_x
+            outline_rect.y += offset_y
+            self.window.blit(text_surface_black, outline_rect)
+    
+        self.window.blit(text_surface_white, text_rect) #draw title
+        pygame.display.update() #update the display
 
     def draw_button(self, surface, center, radius, symbol, button_color, text_color):
         """Draws circle with symbol button for main_menu"""
