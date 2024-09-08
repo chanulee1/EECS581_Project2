@@ -220,9 +220,9 @@ class UIDriver:
         """Draws the box containing the ships 
         and creates ship icons that can be dragged within it"""
          # Create a background buffer which holds the static objects to be repeatedly merged onto the dynamic window
-        # background = pygame.Surface((self.width, self.height))
-        # background.fill(self.bgcolor)
-        self.draw_go(self.bg_image)
+        background = pygame.Surface((self.width, self.height))
+        background.fill(self.bgcolor)
+        self.draw_go(background)
  
         #Draw white square based on number of ships selected
         rect_color = (255, 255, 255)
@@ -230,14 +230,14 @@ class UIDriver:
         rect_height = 100 * self.ship_count + 10
         rect_x = int(self.width * 0.25)- rect_width // 2
         rect_y = int(self.height * 0.4)- rect_height // 2
-        pygame.draw.rect(self.bg_image, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
+        pygame.draw.rect(background, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
 
         #draw another box in bg_color to make it a white outline
         rect_width = 100 * self.ship_count
         rect_height = 100 * self.ship_count
         rect_x = int(self.width * 0.25)- rect_width // 2
         rect_y = int(self.height * 0.4)- rect_height // 2
-        pygame.draw.rect(self.bg_image, self.bgcolor, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
+        pygame.draw.rect(background, self.bgcolor, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
         
         #Makes a list of tug_boat (draggable boat) objects, spaced evenly throughout the white box
         tug_boats = []
@@ -281,12 +281,12 @@ class UIDriver:
                 # On the correct keydown event, rotate the ship
                 if event.type == pygame.KEYDOWN:
                     # If a boat is being dragged and the "r" key is pressed
-                    if tug_boat.dragging and event.key == pygame.K_r:
-                            tug_boat.rotate()
+                    if dragged_object is not None and event.key == pygame.K_r:
+                            dragged_object.rotate()
                     
 
             #Clear the screen with the background buffer
-            self.window.blit(self.bg_image, (0, 0))
+            self.window.blit(background, (0, 0))
 
             #Update the x,y position of the currently dragged object
             if dragged_object:
