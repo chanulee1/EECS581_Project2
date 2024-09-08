@@ -53,3 +53,9 @@ class TugBoat:
                     boat_y = go_y + rect_height  # move down 
 
             self.rect.topleft = (boat_x, boat_y)
+        
+    def rotate(self):
+        """Basic function that rotates the boat"""
+
+        # Swaps the height and width of the boat
+        self.rect.width, self.rect.height = self.rect.height, self.rect.width
