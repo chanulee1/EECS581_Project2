@@ -61,7 +61,7 @@ def main():
         ui.do_text_screen(f"Player {gs.turn}'s Turn")
         #saves the coordinates the user shot at
         shot = ui.wait_for_shot()
-        result = gs.shoot(shot) #shoot your shot baby
+        result = gs.fire(shot) #shoot your shot baby
         if result =='gameover':
             gameover = True
         else:
