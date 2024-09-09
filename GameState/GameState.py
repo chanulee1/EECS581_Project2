@@ -7,7 +7,7 @@ Date: 9/2/2024
 
 Purpose: does the backend driving of the battle ship game state
 """
-# from Logger.Logger import *
+from Logger.Logger import *
 import pandas as pd
 
 def create_blank_board():
@@ -55,6 +55,19 @@ class GameState:
         # Internal tracking int to track how many ship spaces player two has remaining
         self._player_two_ships = 0
 
+    def friendly_board(self):
+        """Quick function to access the board whose turn it is
+        @return Dataframe
+        """
+        friendly_board = (self.player_one_board if self.turn == 1 else self.player_two_board)
+        return friendly_board
+    
+    def enemy_board(self):
+        """Quick function to access the board whose turn it is not
+        @return Dataframe
+        """
+        enemy_board = (self.player_one_board if self.turn == 2 else self.player_two_board)
+        return enemy_board
 
     def fire(self, coord: tuple[int, str]):
         """Main method used to calculate the results of each player firing at a given coord
@@ -71,7 +84,7 @@ class GameState:
         # Checks if the coords provided are not in the 10x10
         if not verify_coord(coord):
             # Logs the error in coordinate passing using the Logger.py
-            # log(f"fire(self, coord): fire was passed an invalid coordinate ({coord}) that is not in the 10x10 board.")
+            log(f"fire(self, coord): fire was passed an invalid coordinate ({coord}) that is not in the 10x10 board.")
             # Raises an IndexError to be handled
             raise IndexError(f"fire(self, coord): fire was passed an invalid coordinate ({coord}) that is not in the 10x10 board.")
 
@@ -133,7 +146,7 @@ class GameState:
             case _:
 
                 # Logs the error in coordinate passing using the Logger.py
-                # log(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
+                log(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
                 # Raises an ValueError to be handled
                 raise ValueError(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
 
@@ -146,7 +159,6 @@ class GameState:
         
         @param (int, string) start: The start coordinate for the start of the ship
         @param (int, string) end: The ending coordinate for the end of the ship
-        @return Bool: Returns True if the ship was created
         @raise ValueError: If the start/end coordinates are not in a straight line
         @raise IndexError: If the coordinates are outside the playable grid
         @raise ValueError: If the ship is longer than 5
@@ -159,13 +171,13 @@ class GameState:
         # Check Straight Line
         # Checks if the two coords passed are on the same row or same column to ensure a straight line
         if not ((start[0] == end[0]) or (start[1] == end[1])): 
-            # log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that are not in a straight line")
+            log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that are not in a straight line")
             raise ValueError(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that are not in a straight line")
 
         # Check that all values are within the 10x10
         # As long as both ends are within the 10x10, all values must be
         if not (verify_coord(start) and verify_coord(end)):
-            # log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in a ship outside of the board's bounds")
+            log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in a ship outside of the board's bounds")
             raise IndexError(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in a ship outside of the board's bounds")
 
         ### SHIP PLACING SECTION
@@ -207,7 +219,7 @@ class GameState:
             # If there is already a ship (or something else that isn't water)
             else:
                 # Typical error procedure
-                # log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in overlapping ships at ({row},{column})")
+                log(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in overlapping ships at ({row},{column})")
                 raise ValueError(f"add_ship(start, end): add_ship was passed two coordinates ({start} & {end}) that result in overlapping ships at ({row},{column})")
 
             # If they are the same row, then we need to increment the letters
@@ -227,5 +239,3 @@ class GameState:
                     row += 1
                 else:
                     row -= 1
-
-        return True

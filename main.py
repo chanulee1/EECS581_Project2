@@ -34,22 +34,44 @@ def main():
     ui.wait_for_go(ship_num_menu = True)
 
     ## SHIP PLACEMENTS ##
-    # start by erasing the UI and redrawing GO button
-    ui.erase()
-    # then draw the transition screen for p1
-    ui.do_text_screen("Player 1's Turn")
-    ui.draw_laptop(1)
-    # draw their ship box and let them drag stuff
-    ui.draw_ship_box(player_number = 2) # <-- this includes a wait_for_go kind of call
-    # store their ship placements
-    p1ships = ui.get_ship_placements()
+    def place_ships(player):
+        # start by erasing the UI and redrawing GO button
+        ui.erase()
+        # then draw the transition screen for each player
+        ui.do_text_screen(f"Player {player}'s Turn")
+        
+        #Loop to keep trying to place ships until they are all successfully placed
+        while True:
+            ui.draw_ship_box(player_number = player) # <-- this includes a wait_for_go kind of call
+            # store their ship placements
+            ships = ui.get_ship_placements()
+            ships = [((1, 'A'), (1, 'A')), ((2, 'A'), (2, 'B')), ((3, 'C'), (3, 'A'))] #hardcoded - REMOVE
+            #Iterates through each ship and calls add_ship for player 1
+            for ship in ships:
+                #Try-Except block to handle errors raised in add_ship by forcing player 1 to re-place ships
+                try:
+                    #adds each ship to gamestate
+                    gs.add_ship(ship[0], ship[1])
+                    #Create flag and set it to false
+                    error_occurred = False
+                except (ValueError, IndexError):
+                    #Tells the player what to do
+                    ui.do_text_screen(f"Player {player}, please try again")
+                    #Set error flag to True
+                    error_occurred = True
+                    #Exit the for loop to restart the while loop
+                    break  
 
-    # then draw the transition screen for p2
-    ui.do_text_screen("Player 2's Turn")
-    # draw their ship box and let them drag stuff
-    ui.draw_ship_box(player_number = 2) # <-- this includes a wait_for_go kind of call
-    # store their ship placements
-    p2ships = ui.get_ship_placements()
+            #Exit the while loop if no errors occurred
+            if not error_occurred:
+                break  
+
+    place_ships(1)
+    gs.turn = 2
+    place_ships(2)
+    gs.turn = 1
+
+    
 
     ## MAIN LOOP ##
     # draw the large "GAME START" text
@@ -59,19 +81,27 @@ def main():
         #ask the players to switch who is playing
         ui.do_text_screen(f"Player {gs.turn}'s Turn")
         #saves the coordinates the user shot at
-        shot = ui.wait_for_shot()
+        shot = ui.wait_for_shot(gs)
         result = gs.fire(shot) #shoot your shot baby
         if result =='gameover':
             gameover = True
         else:
-            ui.draw_shot_result(result)
+            if 'sunk' in result:
+                message = f'You Sunk Enemy Ship {result[-1]}'
+            else:
+                message = result.capitalize() + '!'
+            ui.do_text_screen(message)
 
     ui.draw_gameover()
+    sleep(2)
     # play again feature?
 
     # close the window
     pygame.quit()
 
+
 if __name__ == "__main__":
     # parse command line args here if wanted
     main()
+
+

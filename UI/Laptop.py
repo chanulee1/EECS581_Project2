@@ -9,12 +9,11 @@ Purpose: holds the laptop (grid) objects and can do some functions on them
 import pygame 
 
 class Tile:
-    def __init__(self, top_left, bottom_right, hitstr):
+    def __init__(self, top_left, bottom_right, clickable = False):
         # store position
         self.top_left = top_left
         self.bottom_right = bottom_right
-        # store what hit information we have ("hit", "miss", "unknown")
-        self.hitstr = hitstr
+        self.clickable = clickable
 
 class Laptop:
     SIZE_X = SIZE_Y = 10
@@ -65,8 +64,8 @@ class Laptop:
                 bottom = top + self.tile_size
 
                 # concatonate those into a Tile object and store that
-                self.our_grid[row].append(Tile((left, top), (right, bottom), "unknown"))
+                self.our_grid[row].append(Tile((left, top), (right, bottom)))
 
                 # also store their grid, which is our grid translated right by
                 # the width of our grid + 50 pixels
-                self.their_grid[row].append(Tile((left+self.tile_size*10+50, top), (right+self.tile_size*10+50, bottom), "unknown"))
+                self.their_grid[row].append(Tile((left+self.tile_size*10+50, top), (right+self.tile_size*10+50, bottom), True))

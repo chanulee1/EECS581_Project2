@@ -75,15 +75,6 @@ class UIDriver:
         # number of ships locked in via main menu
         self.ship_count = 3     
 
-    def draw(self, GS, do_transition):
-        # draws the game state it is passed, should return True if successful
-        #  will update which buttons are on depending on GS 
-        pass
-
-    def wait_for_shot(self):
-        # waits for UI input and returns what square was clicked.
-        # buttons being on/off is handled in draw()
-        pass
     
     def wait_for_go(self, ship_num_menu = False):
         """Waits for the go button to be pressed.
@@ -298,11 +289,8 @@ class UIDriver:
             for tug_boat in tug_boats:
                 tug_boat.draw()
 
-            # Draw the laptop
-            self.draw_laptop(player_number)
-
-            # Draw the legends
-            self.draw_legends()
+            # Draw the placement grid
+            self.draw_grid()
 
             #Update the display
             pygame.display.update()
@@ -310,27 +298,33 @@ class UIDriver:
             #Cap the frame rate
             self.clock.tick(60)
         
-
-    def draw_laptop(self, player_number):
-        """Draws the laptop associated with the player number given.
+    def draw_laptop(self, gamestate):
+        """Draws the laptop associated with the player whose turn it is.
         Will show an animation of the laptop being pulled up
 
-        @param player_number: integer (1, 2) representing player's laptop to display
+        @param Gamestate: To draw the current boards
         @raise ValueError: player_number != 1 or 2"""
 
         ## draw the laptop grids
 
         # first define which laptop we should be drawing
+        player_number = gamestate.turn
         if player_number == 1:
             self.cur_laptop = self.p1_laptop
         elif player_number == 2:
             self.cur_laptop = self.p2_laptop
         else:
             raise ValueError("Invalid player number")
+        
+        #Grab the friendly and enemy boards from gamestate
+        friendly_df = gamestate.friendly_board()
+        enemy_df = gamestate.enemy_board()
 
         # loop through rows and cols of each grid
         for row in range(Laptop.SIZE_Y):
             for col in range(Laptop.SIZE_X):
+                #converts col to corresponding character 1-> 'A', etc...
+                str_col = chr(65 + col)
 
                 # grab our grid's tile
                 our_tile = self.cur_laptop.our_grid[row][col]
@@ -339,7 +333,15 @@ class UIDriver:
                 top = our_tile.top_left[1]
                 # create a rectangle at those coordinates
                 rect = pygame.Rect(left, top, self.cur_laptop.tile_size, self.cur_laptop.tile_size)
-                # draw it!
+                #checks the gamestate board at that spot
+                friendly_square = friendly_df.loc[row+1, str_col]
+                #draws the status of the gs board
+                color = ((255,0,0) if '*' in friendly_square 
+                         else (100,100,100) if friendly_square in '12345'
+                         else (255,255,255) if friendly_square == 'M'
+                         else (73, 160, 169))
+                pygame.draw.rect(self.window, color, rect)
+                # draw boader!
                 pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
 
                 # same here, grab their grid's tile
@@ -349,13 +351,78 @@ class UIDriver:
                 top = their_tile.top_left[1]
                 # create a rectangle at those coordinates
                 rect = pygame.Rect(left, top, self.cur_laptop.tile_size, self.cur_laptop.tile_size)
-                # draw it!
+                #checks the gamestate board at that spot
+                enemy_square = enemy_df.loc[row+1, str_col]
+                #draws the status of the gs board except for unhit ships
+                color = ((255,0,0) if '*' in enemy_square 
+                         else (255,255,255) if enemy_square == 'M'
+                         else (73, 160, 169))
+                pygame.draw.rect(self.window, color, rect)
+                
+                #draw border
                 pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
 
-                # someone else will update display for us
+        #Title for our grid
+        font = pygame.font.SysFont("Arial", 50, bold=True)
+        title_text_our = font.render("Friendly Ships", True, (255, 255, 255))
+        title_rect_our = title_text_our.get_rect(center=(self.cur_laptop.our_grid[0][0].top_left[0] + self.cur_laptop.tile_size * Laptop.SIZE_X / 2, 40))
+        self.window.blit(title_text_our, title_rect_our)
+
+        # Title for their grid
+        title_text_their = font.render("Enemy Ships", True, (255, 255, 255))
+        title_rect_their = title_text_their.get_rect(center=(self.cur_laptop.their_grid[0][0].top_left[0] + self.cur_laptop.tile_size * Laptop.SIZE_X / 2, 40))
+        self.window.blit(title_text_their, title_rect_their)
+
+        #Add instructions on firing below thier grid
+        font = pygame.font.SysFont("Arial", 30)
+        instruction_text = font.render("Click a square to fire!", True, (255, 255, 255))
+        instruction_rect = instruction_text.get_rect(center=(
+            self.cur_laptop.their_grid[0][0].top_left[0] + self.cur_laptop.tile_size * Laptop.SIZE_X / 2, 
+            self.cur_laptop.their_grid[0][0].top_left[1] + self.cur_laptop.tile_size * Laptop.SIZE_Y + 40))       
+        self.window.blit(instruction_text, instruction_rect)
+
+        pygame.display.update()
 
 
-    def draw_grids(self):
+    def wait_for_shot(self, gamestate):
+        """
+        # waits for UI input and returns what square was clicked.
+     
+        @return: (int, str) of which square is being targetted
+        """
+        #draws the laptops and legends
+        self.draw_laptop(gamestate)
+        self.draw_legends()
+        log('Laptop Drawn')
+        
+        #Loops until a successful click
+        while True:
+            for event in pygame.event.get():
+                    #Quits if event type is quit
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+
+                    #Stores the mouse position for every click to determine if a button was clicked
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_x, mouse_y = event.pos
+
+                        #iterates over every tile
+                        for row in range(Laptop.SIZE_Y):
+                            for col in range(Laptop.SIZE_X):
+                                #converts col to corresponding character 1-> 'A', etc...
+                                str_col = chr(65 + col)
+
+                                # grab thier grid's tile
+                                tile = self.cur_laptop.their_grid[row][col]
+                                #checks if the tile is even clickable (not already shot at) and if the click is within the tiles range
+                                if tile.clickable and (tile.top_left[0]<=mouse_x<=tile.bottom_right[0]) and (tile.top_left[1]<=mouse_y<=tile.bottom_right[1]):
+                                    #now the tile is no clickable
+                                    tile.clickable = False
+                                    #return (int, str) coordinate of which tile was shot at
+                                    return((row+1, str_col))
+
+
+    def draw_grid(self):
         """A test function used to draw two grids, we can use these for laptops if we want, but it gives a start"""
         
         # Declares it a 10x10
@@ -363,12 +430,12 @@ class UIDriver:
         GRID_COLS = 10
 
         # Size of each box
-        GRID_SIZE = 30
+        GRID_SIZE = 40
 
         # Loops to create a grid
         for row in range(GRID_ROWS):
             for col in range(GRID_COLS):
-                rect = pygame.Rect((self.width/2) - (GRID_SIZE * 5) + col * GRID_SIZE, (self.height/2) + (self.height/4) - (GRID_SIZE * 5) + row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
+                rect = pygame.Rect((self.width/2) - (GRID_SIZE * 5) + col * GRID_SIZE, (self.height/3) - (GRID_SIZE * 5) + row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
 
         # Updates view
@@ -376,73 +443,85 @@ class UIDriver:
 
     def draw_legends(self):
         """Draws the legend for the boards"""
-        # Draw the letters A-J in a vertical bar (left board)
         font = pygame.font.SysFont("Arial", 20)
-        letter_y = int(self.height * 0.1)  # Starting y-coordinate for the letters
-        letter_spacing = 40  # Spacing between each letter
-        for i in range(10):
-            letter = chr(ord('A') + i)  # Get the corresponding letter
-            text_surface = font.render(letter, True, (255, 255, 255))
-            text_rect = text_surface.get_rect(center=(int(self.width * 0.15), letter_y))
-            self.window.blit(text_surface, text_rect)
-            letter_y += letter_spacing
-    
-        # Draw the numbers 1-10 in a (horizontal bar)
-        font = pygame.font.SysFont("Arial", 20)
-        number_x = int(self.width * 0.15 + 40)  # Starting x-coordinate for the numbers
-        number_y = int(self.height * 0.05)  # Adjusted y-coordinate for the numbers
-        number_spacing = 40  # Spacing between each number
+        spacing = 40  # Spacing between each char
+
+        # Draw the numbers 1-10 in a vertical bar (left board)
+        number_x = int(295)  # Starting x-coordinate for the numbers
+        number_y = int(105)  # Starting y-coordinate for the numbers
         for i in range(10):
             number = str(i + 1)
             text_surface = font.render(number, True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(number_x, number_y))
             self.window.blit(text_surface, text_rect)
-            number_x += number_spacing
+            number_y += spacing
 
-        # Draw letter A-J in a vertical bar (right board)
-        letter_y = int(self.height * 0.1) # Starting y-coordinate for the letters
-        letter_x = int(self.width * 0.90) # Starting x-coordinate for the letters
+        #Draw the letters A-J in a (horizontal bar)
+        letter_x = int(330)  # Starting x-coordinate for the letters
+        letter_y = int(75)  # Adjusted y-coordinate for the letters
         for i in range(10):
             letter = chr(ord('A') + i)  # Get the corresponding letter
             text_surface = font.render(letter, True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(letter_x, letter_y))
             self.window.blit(text_surface, text_rect)
-            letter_y += letter_spacing
+            letter_x += spacing
 
-        # Draw the numbers 1-10 in a horizontal bar (right board)
-        number_x = int(self.width * 0.90 - 40)  # Starting x-coordinate for the numbers
-        number_y = int(self.height * 0.05)  # Adjusted y-coordinate for the numbers
+        # Draw the numbers 1-10 in a vertical bar (left board)
+        number_x = int(1180)  # Starting x-coordinate for the numbers
+        number_y = int(105)  # Starting y-coordinate for the numbers
         for i in range(10):
             number = str(i + 1)
             text_surface = font.render(number, True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(number_x, number_y))
             self.window.blit(text_surface, text_rect)
-            number_x -= number_spacing
+            number_y += spacing
 
-        
-    def tile_clicked(self, mouse_x, mouse_y):
-        """Turns a mouse x and mouse y into grid coordinates for bottom grid
+        #Draw the letters A-J in a (horizontal bar)
+        letter_x = int(780)  # Starting x-coordinate for the letters
+        letter_y = int(75)  # Adjusted y-coordinate for the letters
+        for i in range(10):
+            letter = chr(ord('A') + i)  # Get the corresponding letter
+            text_surface = font.render(letter, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(letter_x, letter_y))
+            self.window.blit(text_surface, text_rect)
+            letter_x += spacing
 
-        @param int mouse_x: The x position of where the click occured
-        @param int mouse_y: The y position of where the click occured
-        @return (int, string): Returns a standard coord for this program"""
-        TILE_SIZE = 30
+    # Draw each item in the legend
+        legend_items = [
+        ((255,255,255), "Miss"),
+        ((255,0,0), "Hit"),
+        ((100,100,100), "Ship"),
+        ((73, 160, 169), "Water")]
 
-        # Calculates x position by using the mouse position and adjusting for where the grid is.
-        x_pos = mouse_x - ((self.width/2) - (TILE_SIZE * 5))
+        window_width, window_height = self.window.get_size()
+        x = int(window_width * 0.4) 
+        y = int(window_height * 0.7)
 
-        # Calculates y position by using mouse position adjusting for where grid is up and down.
-        y_pos = mouse_y - ((self.height * 3/4) - (TILE_SIZE * 5))
+        # Draw key text
+        bigger_font = pygame.font.SysFont("Arial", 25, bold = True)
+        text = bigger_font.render('Key', True, (255,255,255))
+        text_rect = text.get_rect(center=(x+125, y - 30))
+        self.window.blit(text, text_rect)
 
-        # Turns x and y position into X,Y positions
-        x_coord = int((x_pos // 30) + 1)
-        y_coord = int((y_pos // 30) + 1)
+        for i, (color, label) in enumerate(legend_items):
+            # Calculate positions
+            pos_x = x + spacing
+            pos_y = y + i * (40)
+            
+            # Draw colored square
+            color_rect = pygame.Rect(pos_x, pos_y, 30, 30)
+            pygame.draw.rect(self.window, color, color_rect)
+            
+            # Draw border around the square
+            pygame.draw.rect(self.window, (255,255,255), color_rect, 2)  # 2 is the border width
+            
+            # Draw label text
+            text = font.render(label, True, (255,255,255))
+            text_rect = text.get_rect(midleft=(pos_x + 30 + spacing, pos_y + 30 // 2))
+            self.window.blit(text, text_rect)
 
-        # Conversion dictonary to help turn ints int letters
-        conversion = {"1": "A", "2": "B", "3": "C", "4": "D", "5": "E", "6": "F", "7": "G", "8": "H", "9": "I", "10": "J"}
+        pygame.display.update()
 
-        # Returns the coord of the click in our format for coords (row int, column letter string)
-        return (y_coord, conversion[str(x_coord)])
 
     def get_ship_placements(self):
         """Gets the pandas array representing the current laptop's ship placements
@@ -456,7 +535,7 @@ class UIDriver:
         @param text: string of text to put on the screen"""
         self.erase()
 
-        #Draw the large "Player __ Turn" Title
+        #Draw the large "text" Title
         font = pygame.font.SysFont("Arial", 100, bold=True)
         text_surface = font.render(f"{text}", True, (240, 243, 189))
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
