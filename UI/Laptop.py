@@ -17,6 +17,8 @@ class Tile:
         self.hitstr = hitstr
 
 class Laptop:
+    SIZE_X = SIZE_Y = 10
+    
     def __init__(self, player_number, screen_wid, screen_height, tile_size = 90):
         """Constructor for laptop class
 
@@ -27,37 +29,44 @@ class Laptop:
 
         # define class variables
         self.player_num = player_number
-        self.SIZE_X = self.SIZE_Y = 10
+
         self.screen_wid = screen_wid
         self.screen_height = screen_height
         self.tile_size = tile_size
 
-        # define our grid structure, a double array of tiles
-        self.grid = None
+        # define our grid structures, a double array of tiles
+        self.their_grid = None
+        self.our_grid = None
 
         # generate the grid
-        self.gen_grid()
+        self.gen_grids()
 
 
-    def gen_grid(self):
-        """Generates the grid based on parameters given in constructor
+    def gen_grids(self):
+        """Generates the grids based on parameters given in constructor
         Can be regenerated as needed if any of those parameters change"""
         # redefine the grid
-        self.grid = []
+        self.their_grid = []
+        self.our_grid = []
         # loop through it
-        for row in range(self.SIZE_Y):
+        for row in range(Laptop.SIZE_Y):
             # don't forget to add a row list
-            self.grid.append([])
+            self.their_grid.append([])
+            self.our_grid.append([])
             # go through cols
-            for col in range(self.SIZE_X):
+            for col in range(Laptop.SIZE_X):
                 # do some math to find left and top pixel values
                 ### NOTE: I'm not sure if this math is correct! ###
-                left = (self.screen_wid/2) - (self.tile_size * 5) + col * self.tile_size
-                top = (self.screen_height/2) + (self.screen_height/4) - (self.tile_size * 5) + row * self.tile_size
+                left = (self.screen_wid/3) - (self.tile_size * 5) + col * self.tile_size
+                top = (self.screen_height/3) - (self.tile_size * 5) + row * self.tile_size
                 
                 # add tile size to get bottom, right values
                 right = left + self.tile_size
                 bottom = top + self.tile_size
 
                 # concatonate those into a Tile object and store that
-                self.grid[row].append(Tile((left, top), (right, bottom), "unknown"))
+                self.our_grid[row].append(Tile((left, top), (right, bottom), "unknown"))
+
+                # also store their grid, which is our grid translated right by
+                # the width of our grid + 50 pixels
+                self.their_grid[row].append(Tile((left+self.tile_size*10+50, top), (right+self.tile_size*10+50, bottom), "unknown"))

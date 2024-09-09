@@ -63,11 +63,17 @@ class UIDriver:
         
 
         # define uninitialized class variables
-        self.p1_laptop = None   # p1 laptop object, should be another file
-        self.p2_laptop = None   # p2 laptop object, should be another file
-        self.cur_laptop = None  # current laptop being displayed
-        self.go_button = None   # go button object
-        self.ship_count = 3     # number of ships locked in via main menu
+        # p1 laptop object
+        self.p1_laptop = Laptop(2, self.width, self.height, tile_size = 60)   
+        # p2 laptop object
+        self.p2_laptop = Laptop(2, self.width, self.height, tile_size = 60)
+        # not sure if this will be required, this is the current laptop being displayed
+        #  points to either self.p1_laptop or self.p2_laptop
+        self.cur_laptop = None
+        # go button object
+        self.go_button = None   
+        # number of ships locked in via main menu
+        self.ship_count = 3     
 
     def draw(self, GS, do_transition):
         # draws the game state it is passed, should return True if successful
@@ -160,24 +166,6 @@ class UIDriver:
 
         # Check if the mouse click is within the button's rectangle
         return (go_x <= mouse_x <= go_x + rect_width) and (go_y <= mouse_y <= go_y + rect_height)
-    
-    ''' commented out and didn't see a difference
-    def draw_title(self): #does this do anything??
-        """Draws the title text
-
-        @param do_delete=False: boolean, if True will remove the element"""
-        # first set font
-        font = pygame.font.SysFont("Arial", 300)
-        # create a surface to render
-        text_surface = font.render("BATTLESHIP", False, (0, 0, 0))
-        # set the destination of the surface
-        text_rect = text_surface.get_rect(center=(self.width/2, 200))
-
-
-        self.window.blit(text_surface, text_rect)   
-        # Update the display to reflect the changes
-        pygame.display.update()
-    '''  #draw_main_menu() does above
 
     def draw_ship_nums(self):
         """Draws the ship number edit control
@@ -216,34 +204,38 @@ class UIDriver:
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
         self.draw_button(self.window, decrease_button_center, 30, "-", (49, 190, 243), (255, 255, 255))
 
-    def draw_ship_box(self):
+    def draw_ship_box(self, player_number = 1):
         """Draws the box containing the ships 
-        and creates ship icons that can be dragged within it"""
+        and creates ship icons that can be dragged within it
+        
+        @param player_number: int (1, 2) tracking which player's ship box is being drawn"""
          # Create a background buffer which holds the static objects to be repeatedly merged onto the dynamic window
         background = pygame.Surface((self.width, self.height))
         background.fill(self.bgcolor)
         self.draw_go(background)
  
+        tugboat_spacer = TugBoat.tile_size+20
+
         #Draw white square based on number of ships selected
         rect_color = (255, 255, 255)
-        rect_width = 100 * self.ship_count + 10
-        rect_height = 100 * self.ship_count + 10
-        rect_x = int(self.width * 0.25)- rect_width // 2
-        rect_y = int(self.height * 0.4)- rect_height // 2
+        rect_width = tugboat_spacer * self.ship_count + 10
+        rect_height = tugboat_spacer * self.ship_count + 10
+        rect_x = int(self.width * 0.15)- rect_width // 2
+        rect_y = int(self.height * 0.75)- rect_height // 2
         pygame.draw.rect(background, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
 
         #draw another box in bg_color to make it a white outline
-        rect_width = 100 * self.ship_count
-        rect_height = 100 * self.ship_count
-        rect_x = int(self.width * 0.25)- rect_width // 2
-        rect_y = int(self.height * 0.4)- rect_height // 2
+        rect_width = tugboat_spacer * self.ship_count
+        rect_height = tugboat_spacer * self.ship_count
+        rect_x = int(self.width * 0.15)- rect_width // 2
+        rect_y = int(self.height * 0.75)- rect_height // 2
         pygame.draw.rect(background, self.bgcolor, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
         
         #Makes a list of tug_boat (draggable boat) objects, spaced evenly throughout the white box
         tug_boats = []
         for ship_size in range(1, self.ship_count+1):
             x = rect_x + 10
-            y = rect_y + 10 + 100 * (ship_size-1)
+            y = rect_y + 10 + tugboat_spacer * (ship_size-1)
             tug_boat = TugBoat(x, y, ship_size, self.window)
             tug_boats.append(tug_boat)
 
@@ -297,24 +289,59 @@ class UIDriver:
             for tug_boat in tug_boats:
                 tug_boat.draw()
 
+            # Draw the laptop
+            self.draw_laptop(player_number)
+
             #Update the display
             pygame.display.update()
 
             #Cap the frame rate
             self.clock.tick(60)
+        
 
     def draw_laptop(self, player_number):
         """Draws the laptop associated with the player number given.
         Will show an animation of the laptop being pulled up
 
-        @param player_number: integer (1, 2) representing player's laptop to display"""
-        lap = Laptop(player_number, self.width, self.height, tile_size = 50)
-        for row in lap.grid:
-            for tile in row:
-                rect = pygame.Rect(tile.top_left[0], tile.top_left[1], lap.tile_size, lap.tile_size)
+        @param player_number: integer (1, 2) representing player's laptop to display
+        @raise ValueError: player_number != 1 or 2"""
+
+        ## draw the laptop grids
+
+        # first define which laptop we should be drawing
+        if player_number == 1:
+            self.cur_laptop = self.p1_laptop
+        elif player_number == 2:
+            self.cur_laptop = self.p2_laptop
+        else:
+            raise ValueError("Invalid player number")
+
+        # loop through rows and cols of each grid
+        for row in range(Laptop.SIZE_Y):
+            for col in range(Laptop.SIZE_X):
+
+                # grab our grid's tile
+                our_tile = self.cur_laptop.our_grid[row][col]
+                # grab the top left coordinate in pixels
+                left = our_tile.top_left[0]
+                top = our_tile.top_left[1]
+                # create a rectangle at those coordinates
+                rect = pygame.Rect(left, top, self.cur_laptop.tile_size, self.cur_laptop.tile_size)
+                # draw it!
                 pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
-    
-        pygame.display.update()
+
+                # same here, grab their grid's tile
+                their_tile = self.cur_laptop.their_grid[row][col]
+                # grab the top left coordinate in pixels
+                left = their_tile.top_left[0]
+                top = their_tile.top_left[1]
+                # create a rectangle at those coordinates
+                rect = pygame.Rect(left, top, self.cur_laptop.tile_size, self.cur_laptop.tile_size)
+                # draw it!
+                pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
+
+                # someone else will update display for us
+
 
     def draw_grids(self):
         """A test function used to draw two grids, we can use these for laptops if we want, but it gives a start"""

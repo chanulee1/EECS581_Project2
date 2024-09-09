@@ -11,9 +11,11 @@ from Logger.Logger import *
 import pygame
 
 class TugBoat:
+    tile_size = 50
+
     def __init__(self, x, y, size, surface):
         #note: boats are able to be dragged off screen
-        self.rect = pygame.Rect(x, y, 80*size, 80)
+        self.rect = pygame.Rect(x, y, self.tile_size*size, self.tile_size)
         self.color = (100, 100,100) #gray
         self.dragging = False #boolean determining if boat is being dragged or not
         self.size = size 

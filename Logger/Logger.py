@@ -45,6 +45,7 @@ def log(log_str):
     # prepend it to the log_str
     log_str = f"{now} : {log_str}\n"
 
+    print(log_str, end="")
     # try to make a log file
     try:
         # open it

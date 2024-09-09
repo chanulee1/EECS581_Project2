@@ -40,15 +40,14 @@ def main():
     ui.do_text_screen("Player 1's Turn")
     ui.draw_laptop(1)
     # draw their ship box and let them drag stuff
-    ui.draw_ship_box() # <-- this includes a wait_for_go kind of call
+    ui.draw_ship_box(player_number = 2) # <-- this includes a wait_for_go kind of call
     # store their ship placements
     p1ships = ui.get_ship_placements()
 
     # then draw the transition screen for p2
     ui.do_text_screen("Player 2's Turn")
-    ui.draw_laptop(2)
     # draw their ship box and let them drag stuff
-    ui.draw_ship_box() # <-- this includes a wait_for_go kind of call
+    ui.draw_ship_box(player_number = 2) # <-- this includes a wait_for_go kind of call
     # store their ship placements
     p2ships = ui.get_ship_placements()
 
