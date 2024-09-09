@@ -44,7 +44,7 @@ class UIDriver:
         self.window.fill(self.bgcolor)
 
         # trying with bg jpg
-        self.bg_image_path = "./assets/deep_ocean.jpg"
+        self.bg_image_path = "./assets/background.jpg"
         self.bg_image = pygame.image.load(self.bg_image_path)
         self.bg_image = pygame.transform.scale(self.bg_image, (self.width, self.height))
         # Scale the image to fit window
