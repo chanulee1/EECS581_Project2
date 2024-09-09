@@ -37,7 +37,7 @@ class UIDriver:
         self.height = display_info.current_h * 0.8
 
         # initializes the window using the previously calculated sizes
-        self.window = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
+        self.window = pygame.display.set_mode((self.width, self.height))
 
         # define and set background color
         self.bgcolor = '#152636'
@@ -64,9 +64,9 @@ class UIDriver:
 
         # define uninitialized class variables
         # p1 laptop object
-        self.p1_laptop = Laptop(2, self.width, self.height, tile_size = 60)   
+        self.p1_laptop = Laptop(2, self.width, self.height, tile_size = 40)   
         # p2 laptop object
-        self.p2_laptop = Laptop(2, self.width, self.height, tile_size = 60)
+        self.p2_laptop = Laptop(2, self.width, self.height, tile_size = 40)
         # not sure if this will be required, this is the current laptop being displayed
         #  points to either self.p1_laptop or self.p2_laptop
         self.cur_laptop = None
@@ -221,14 +221,14 @@ class UIDriver:
         rect_width = tugboat_spacer * self.ship_count + 10
         rect_height = tugboat_spacer * self.ship_count + 10
         rect_x = int(self.width * 0.15)- rect_width // 2
-        rect_y = int(self.height * 0.75)- rect_height // 2
+        rect_y = int(self.height * 0.80)- rect_height // 2
         pygame.draw.rect(background, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
 
         #draw another box in bg_color to make it a white outline
         rect_width = tugboat_spacer * self.ship_count
         rect_height = tugboat_spacer * self.ship_count
         rect_x = int(self.width * 0.15)- rect_width // 2
-        rect_y = int(self.height * 0.75)- rect_height // 2
+        rect_y = int(self.height * 0.80)- rect_height // 2
         pygame.draw.rect(background, self.bgcolor, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
         
         #Makes a list of tug_boat (draggable boat) objects, spaced evenly throughout the white box
@@ -264,11 +264,20 @@ class UIDriver:
                     if self.go_clicked(mouse_x, mouse_y) and all_ships_placed:
                         waiting = False
 
-                #On mouse up events, if a boat is being drag, stop dragging it (set dragging to false and clear dragged_object)
+                # On mouse up events, if a boat is being drag, stop dragging it (set dragging to false and clear dragged_object)
+                # Then snap grid to nearest grid tiles
                 if event.type == pygame.MOUSEBUTTONUP:
                     if dragged_object:
+                        # snap to grid
+                        
+
+
+
+
+                        # stop dragging the boat
                         dragged_object.dragging = False
-                        dragged_object = None  
+                        dragged_object = None
+                          
 
                 # On the correct keydown event, rotate the ship
                 if event.type == pygame.KEYDOWN:
@@ -291,6 +300,9 @@ class UIDriver:
 
             # Draw the laptop
             self.draw_laptop(player_number)
+
+            # Draw the legends
+            self.draw_legends()
 
             #Update the display
             pygame.display.update()
@@ -358,10 +370,56 @@ class UIDriver:
             for col in range(GRID_COLS):
                 rect = pygame.Rect((self.width/2) - (GRID_SIZE * 5) + col * GRID_SIZE, (self.height/2) + (self.height/4) - (GRID_SIZE * 5) + row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
-        
+
         # Updates view
         pygame.display.update()
+
+    def draw_legends(self):
+        """Draws the legend for the boards"""
+        # Draw the letters A-J in a vertical bar (left board)
+        font = pygame.font.SysFont("Arial", 20)
+        letter_y = int(self.height * 0.1)  # Starting y-coordinate for the letters
+        letter_spacing = 40  # Spacing between each letter
+        for i in range(10):
+            letter = chr(ord('A') + i)  # Get the corresponding letter
+            text_surface = font.render(letter, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(int(self.width * 0.15), letter_y))
+            self.window.blit(text_surface, text_rect)
+            letter_y += letter_spacing
     
+        # Draw the numbers 1-10 in a (horizontal bar)
+        font = pygame.font.SysFont("Arial", 20)
+        number_x = int(self.width * 0.15 + 40)  # Starting x-coordinate for the numbers
+        number_y = int(self.height * 0.05)  # Adjusted y-coordinate for the numbers
+        number_spacing = 40  # Spacing between each number
+        for i in range(10):
+            number = str(i + 1)
+            text_surface = font.render(number, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(number_x, number_y))
+            self.window.blit(text_surface, text_rect)
+            number_x += number_spacing
+
+        # Draw letter A-J in a vertical bar (right board)
+        letter_y = int(self.height * 0.1) # Starting y-coordinate for the letters
+        letter_x = int(self.width * 0.90) # Starting x-coordinate for the letters
+        for i in range(10):
+            letter = chr(ord('A') + i)  # Get the corresponding letter
+            text_surface = font.render(letter, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(letter_x, letter_y))
+            self.window.blit(text_surface, text_rect)
+            letter_y += letter_spacing
+
+        # Draw the numbers 1-10 in a horizontal bar (right board)
+        number_x = int(self.width * 0.90 - 40)  # Starting x-coordinate for the numbers
+        number_y = int(self.height * 0.05)  # Adjusted y-coordinate for the numbers
+        for i in range(10):
+            number = str(i + 1)
+            text_surface = font.render(number, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(number_x, number_y))
+            self.window.blit(text_surface, text_rect)
+            number_x -= number_spacing
+
+        
     def tile_clicked(self, mouse_x, mouse_y):
         """Turns a mouse x and mouse y into grid coordinates for bottom grid
 

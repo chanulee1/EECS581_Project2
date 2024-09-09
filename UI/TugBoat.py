@@ -11,7 +11,7 @@ from Logger.Logger import *
 import pygame
 
 class TugBoat:
-    tile_size = 50
+    tile_size = 35
 
     def __init__(self, x, y, size, surface):
         #note: boats are able to be dragged off screen
