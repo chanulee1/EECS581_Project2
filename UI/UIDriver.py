@@ -40,16 +40,16 @@ class UIDriver:
         self.window = pygame.display.set_mode((self.width, self.height))
 
         # define and set background color
-        self.bgcolor = '#152636'
+        self.bgcolor = (17, 116, 175)
         self.window.fill(self.bgcolor)
 
         # trying with bg jpg
-        self.bg_image_path = "./assets/background.jpg"
-        self.bg_image = pygame.image.load(self.bg_image_path)
-        self.bg_image = pygame.transform.scale(self.bg_image, (self.width, self.height))
+        #self.bg_image_path = "./assets/background.jpg"
+        #self.bg_image = pygame.image.load(self.bg_image_path)
+        #self.bg_image = pygame.transform.scale(self.bg_image, (self.width, self.height))
         # Scale the image to fit window
 
-        self.window.blit(self.bg_image, (0, 0))
+        #self.window.blit(self.bg_image, (0, 0))
 
         # sets the title of the window
         pygame.display.set_caption("Battleship")
@@ -64,7 +64,7 @@ class UIDriver:
 
         # define uninitialized class variables
         # p1 laptop object
-        self.p1_laptop = Laptop(2, self.width, self.height, tile_size = 40)   
+        self.p1_laptop = Laptop(1, self.width, self.height, tile_size = 40)   
         # p2 laptop object
         self.p2_laptop = Laptop(2, self.width, self.height, tile_size = 40)
         # not sure if this will be required, this is the current laptop being displayed
@@ -103,7 +103,7 @@ class UIDriver:
 
         @param do_delete=False: boolean, if True will remove the element"""
         #need to adjust for do_delete and not appearing on screen when main is run
-        rect_color = (49, 190, 243) #light blue
+        rect_color = (16, 64, 128) 
         surface = (self.window if surface == None else surface)
         window_width, window_height = surface.get_size()
 
@@ -189,11 +189,11 @@ class UIDriver:
 
        #Draw ship increase button by calling draw_button function
         increase_button_center = (rect_x + rect_width + 50, rect_y)
-        self.draw_button(self.window, increase_button_center, 30, "+", (49, 190, 243), (255, 255, 255))
+        self.draw_button(self.window, increase_button_center, 30, "+", (16, 64, 128), (255, 255, 255))
 
         #Draw ship decrease button
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
-        self.draw_button(self.window, decrease_button_center, 30, "-", (49, 190, 243), (255, 255, 255))
+        self.draw_button(self.window, decrease_button_center, 30, "-", (16, 64, 128), (255, 255, 255))
 
     def draw_ship_box(self, player_number = 1):
         """Draws the box containing the ships 
@@ -610,20 +610,6 @@ class UIDriver:
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
         self.window.blit(text_surface, text_rect) #draw the text
         pygame.display.update()  #update the display
-
-    '''def draw_main_menu(self):
-        """Draws the main menu and handles events"""
-
-        #Draw the large "BATTLESHIP" Title
-        font = pygame.font.SysFont("Arial", 125, bold=True)
-        text_surface = font.render("BATTLESHIP", True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
-        text_rect.y -= 230  # move the title up
-
-        self.window.blit(text_surface, text_rect)
-
-        #Update the display
-        pygame.display.update()'''
 
     def draw_main_menu(self):
         font = pygame.font.SysFont("Arial", 125, bold=True) #font, size, bold
