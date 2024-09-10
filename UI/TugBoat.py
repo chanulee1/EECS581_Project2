@@ -25,7 +25,7 @@ class TugBoat:
     def draw(self): #method to draw tugboats
         pygame.draw.rect(self.surface, self.color, self.rect, border_radius=10)
 
-    def update(self, mouse_x, mouse_y): #NEED to rotate vertically, handle here or?
+    def update(self, mouse_x, mouse_y):
         window_width, window_height = self.surface.get_size() #get window size for reference
 
         rect_width = int(window_width * 0.2)   # 20% of the window's width
