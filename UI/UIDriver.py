@@ -202,6 +202,7 @@ class UIDriver:
         @param player_number: int (1, 2) tracking which player's ship box is being drawn"""
 
         ship_positions = dict()
+        taken_positions = set()
 
          # Create a background buffer which holds the static objects to be repeatedly merged onto the dynamic window
         background = pygame.Surface((self.width, self.height))
@@ -239,7 +240,6 @@ class UIDriver:
         #Loop to keep updating the screen until GO is clicked
         #TODO Make sure GO cannot be clicked until all ships are placed
         waiting = True
-        all_ships_placed = True #This should eventually start as false
         while waiting:
             #typical quit procedure
             for event in pygame.event.get():
@@ -254,16 +254,31 @@ class UIDriver:
                         if tug_boat.rect.collidepoint(mouse_x, mouse_y):
                             tug_boat.dragging = True
                             dragged_object = tug_boat
+                            # Remove From Positions Taken When Placing To Not Stop Slight Movements
+                            
+                            if dragged_object.size in ship_positions.keys():
+                                for i in range(dragged_object.size):
+                                    if dragged_object.is_horizontal:
+                                        coord = (ship_positions[dragged_object.size][0][0], chr(ord(ship_positions[dragged_object.size][0][1])+i))
+                                    else:
+                                        coord = (ship_positions[dragged_object.size][0][0]+i, ship_positions[dragged_object.size][0][1])
+                                    
+                                    if coord in taken_positions:
+                                        taken_positions.remove(coord)
+                                
+                                ship_positions.pop(dragged_object.size)
                             break
-                    if self.go_clicked(mouse_x, mouse_y) and all_ships_placed:
+                    if self.go_clicked(mouse_x, mouse_y) and len(ship_positions.keys()) == len(tug_boats):
                         waiting = False
 
                 # On mouse up events, if a boat is being drag, stop dragging it (set dragging to false and clear dragged_object)
                 # Then snap grid to nearest grid tiles
                 if event.type == pygame.MOUSEBUTTONUP:
                     if dragged_object:
-                        # snap to grid
+                        
+                        # CODE FOR SNAP TO GRID
 
+                        log(f"PRE ANYTHING: {taken_positions} | {ship_positions}")
                         GRID_SIZE = 40
 
                         # Marks the upper left of the placement grid
@@ -274,8 +289,8 @@ class UIDriver:
                         before_x, before_y = dragged_object.rect.topleft
 
                         # Calculates which column and row the upper left is closest to
-                        column_to_snap = round(((before_x) - grid_upper_left_x)/40)
-                        row_to_snap = round(((before_y) - grid_upper_left_y)/40)
+                        column_to_snap = round(((before_x) - grid_upper_left_x)/GRID_SIZE)
+                        row_to_snap = round(((before_y) - grid_upper_left_y)/GRID_SIZE)
 
                         # Declares variables to enable snapping even when user is outside of grid
                         max_column = 9
@@ -298,7 +313,7 @@ class UIDriver:
                             row_to_snap = 0
 
                         # Moves the ship to snap position
-                        dragged_object.force_move(grid_upper_left_x + 40 * column_to_snap,grid_upper_left_y + 40 * row_to_snap)
+                        dragged_object.force_move(grid_upper_left_x + GRID_SIZE * column_to_snap,grid_upper_left_y + GRID_SIZE * row_to_snap)
 
                         head_position = (row_to_snap+1, chr(ord('A') + column_to_snap))
                         if dragged_object.is_horizontal:
@@ -306,11 +321,42 @@ class UIDriver:
                         else:
                             tail_position = (row_to_snap + dragged_object.size, chr(ord('A') + column_to_snap))
                         
-                        ship_positions[dragged_object.size] = (head_position, tail_position)
+                        coords_to_add = set()
+                        errored = False
+                        for i in range(dragged_object.size):
+                            if dragged_object.is_horizontal:
+                                coord = (head_position[0], chr(ord(head_position[1])+i))
+                            else:
+                                coord = (head_position[0]+i, head_position[1])
+                            
+                            if coord in taken_positions:
+                                log(f" {coord} OVERLAP")
+                                if not dragged_object.is_horizontal:
+                                    dragged_object.rotate()
+                                dragged_object.force_move(dragged_object.original_pos[0], dragged_object.original_pos[1])
+                                errored = True
+                                break
+                            else:
+                                coords_to_add.add(coord)
 
+                            if not errored:
+                                for internal_coord in coords_to_add:
+                                    taken_positions.add(internal_coord)
+                                ship_positions[dragged_object.size] = (head_position, tail_position)
+                                    
+
+                        #print(current_coords)
+                        
                         # stop dragging the boat
                         dragged_object.dragging = False
                         dragged_object = None
+
+                        # if len(ship_positions.keys()) == len(tug_boats):
+                        #     all_ships_placed = True
+                        # else:
+                        #     all_ships_placed = False
+
+                        log(f"POST EVERYTHING: {taken_positions} | {ship_positions}")
 
                 # On the correct keydown event, rotate the ship
                 if event.type == pygame.KEYDOWN:

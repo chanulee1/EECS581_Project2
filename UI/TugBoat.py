@@ -3,6 +3,7 @@ UIDriver.py
 Authors:
     - Chase Horner
     - Katharine Swann
+    - Michael Stang
 Date: 9/5/2024
 
 Purpose: Creates a draggable boat object
@@ -21,6 +22,7 @@ class TugBoat:
         self.size = size 
         self.surface = surface
         self.is_horizontal = True
+        self.original_pos = self.rect.topleft
 
     def draw(self): #method to draw tugboats
         pygame.draw.rect(self.surface, self.color, self.rect, border_radius=10)
