@@ -743,14 +743,23 @@ class UIDriver:
         text_rect = text_surface_white.get_rect(center=(self.width / 2, self.height / 2))
         #get center for text
         text_rect.y -= 230  #move the title up
-        for offset_x, offset_y in [(-2, -2), (-2, 2), (2, -2), (10, 10)]:
+
+        drop_shadow = text_rect.copy()
+        drop_shadow.x += 7
+        drop_shadow.y += 7
+        
+        self.window.blit(text_surface_black, drop_shadow)
+        self.window.blit(text_surface_white, text_rect)
+
+        '''for offset_x, offset_y in [(-2, -2), (-2, 2), (2, -2), (10, 10)]:
             #adding outlines around, offset last corrdinate to mimic drop shadow bottom right
             outline_rect = text_rect.copy()
             outline_rect.x += offset_x
             outline_rect.y += offset_y
             self.window.blit(text_surface_white, outline_rect)
     
-        self.window.blit(text_surface_black, text_rect) #draw title
+        self.window.blit(text_surface_black, text_rect) #draw title'''
+        
         pygame.display.update() #update the display
 
     def draw_button(self, surface, center, radius, symbol, button_color, text_color):
