@@ -64,8 +64,8 @@ class Laptop:
                 bottom = top + self.tile_size
 
                 # concatonate those into a Tile object and store that
-                self.our_grid[row].append(Tile((left, top), (right, bottom)))
+                self.our_grid[row].append(Tile((left, top+30), (right, bottom)))
 
                 # also store their grid, which is our grid translated right by
                 # the width of our grid + 50 pixels
-                self.their_grid[row].append(Tile((left+self.tile_size*10+50, top), (right+self.tile_size*10+50, bottom), True))
+                self.their_grid[row].append(Tile((left+self.tile_size*10+50, top+30), (right+self.tile_size*10+50, bottom), True))
