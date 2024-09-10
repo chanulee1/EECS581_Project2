@@ -42,10 +42,11 @@ def main():
         
         #Loop to keep trying to place ships until they are all successfully placed
         while True:
-            ui.draw_ship_box(player_number = player) # <-- this includes a wait_for_go kind of call
+            
+            ships = ui.draw_ship_box(player_number = player) # <-- this includes a wait_for_go kind of call
             # store their ship placements
-            ships = ui.get_ship_placements()
-            ships = [((1, 'A'), (1, 'A')), ((2, 'A'), (2, 'B')), ((3, 'C'), (3, 'A'))] #hardcoded - REMOVE
+            #ships = ui.get_ship_placements()
+            #ships = [((1, 'A'), (1, 'A')), ((2, 'A'), (2, 'B')), ((3, 'C'), (3, 'A'))] #hardcoded - REMOVE
             #Iterates through each ship and calls add_ship for player 1
             for ship in ships:
                 #Try-Except block to handle errors raised in add_ship by forcing player 1 to re-place ships

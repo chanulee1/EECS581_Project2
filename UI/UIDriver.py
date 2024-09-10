@@ -200,6 +200,9 @@ class UIDriver:
         and creates ship icons that can be dragged within it
         
         @param player_number: int (1, 2) tracking which player's ship box is being drawn"""
+
+        ship_positions = dict()
+
          # Create a background buffer which holds the static objects to be repeatedly merged onto the dynamic window
         background = pygame.Surface((self.width, self.height))
         background.fill(self.bgcolor)
@@ -297,10 +300,17 @@ class UIDriver:
                         # Moves the ship to snap position
                         dragged_object.force_move(grid_upper_left_x + 40 * column_to_snap,grid_upper_left_y + 40 * row_to_snap)
 
+                        head_position = (row_to_snap+1, chr(ord('A') + column_to_snap))
+                        if dragged_object.is_horizontal:
+                            tail_position = (row_to_snap + 1, chr(ord('A') + column_to_snap + dragged_object.size - 1))
+                        else:
+                            tail_position = (row_to_snap + dragged_object.size, chr(ord('A') + column_to_snap))
+                        
+                        ship_positions[dragged_object.size] = (head_position, tail_position)
+
                         # stop dragging the boat
                         dragged_object.dragging = False
                         dragged_object = None
-                          
 
                 # On the correct keydown event, rotate the ship
                 if event.type == pygame.KEYDOWN:
@@ -329,6 +339,8 @@ class UIDriver:
 
             #Cap the frame rate
             self.clock.tick(60)
+        
+        return ship_positions.values()
         
     def draw_laptop(self, gamestate):
         """Draws the laptop associated with the player whose turn it is.
