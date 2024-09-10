@@ -44,12 +44,12 @@ class UIDriver:
         self.window.fill(self.bgcolor)
 
         # trying with bg jpg
-        #self.bg_image_path = "./assets/background.jpg"
-        #self.bg_image = pygame.image.load(self.bg_image_path)
-        #self.bg_image = pygame.transform.scale(self.bg_image, (self.width, self.height))
+        self.bg_image_path = "./assets/background.png"
+        self.bg_image = pygame.image.load(self.bg_image_path)
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.width, self.height))
         # Scale the image to fit window
 
-        #self.window.blit(self.bg_image, (0, 0))
+        self.window.blit(self.bg_image, (0, 0))
 
         # sets the title of the window
         pygame.display.set_caption("Battleship")
@@ -163,7 +163,7 @@ class UIDriver:
         
         @param do_delete=False: boolean, if True will remove the element"""
         #Draw spindown selector
-        rect_color = (49, 190, 243) #light blue
+        rect_color = (16, 64, 128) #light blue
         rect_width = 75
         rect_height = 100
         rect_x = int(self.width * 0.5)- rect_width // 2
