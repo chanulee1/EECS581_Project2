@@ -278,8 +278,10 @@ class UIDriver:
                         
                         # CODE FOR SNAP TO GRID
 
-                        log(f"PRE ANYTHING: {taken_positions} | {ship_positions}")
-                        GRID_SIZE = 40
+                        # Important to note, all ship snapping is handled by the "head" of the ship, which is the top left corner
+
+                        # Constant grid size for math on snapping
+                        GRID_SIZE = 40 
 
                         # Marks the upper left of the placement grid
                         grid_upper_left_x = (self.width/2) - (GRID_SIZE * 5)
@@ -292,71 +294,105 @@ class UIDriver:
                         column_to_snap = round(((before_x) - grid_upper_left_x)/GRID_SIZE)
                         row_to_snap = round(((before_y) - grid_upper_left_y)/GRID_SIZE)
 
-                        # Declares variables to enable snapping even when user is outside of grid
+                        # The highest index of columns and rows (in this case there are 10 rows and 10 columns indexed [for now] as 0-9)
                         max_column = 9
                         max_row = 9
 
-                        # Based on the orientation of the ship, reduces maxes to ensure nothing goes off the grid
+                        # Based on the orientation of the ship, reduces the range of viable coords that a ship's head can be placed to ensure all pieces are in the 10x10
+                        # If the ship is horizontal
                         if dragged_object.is_horizontal:
+                            # We reduce the column range to 0 through 9 - length of ship + 1
                             max_column -= dragged_object.size - 1
                         else:
+                            # Same as above, but with rows if the ship vertical
                             max_row -= dragged_object.size - 1
 
                         # Checks if the ship is outside of the bounds of the grid, and if so, adjusts to put it onto the placement grid
+                        # If the column it calculated as above the highest column it's allowed, it sets to what the max is
+                        # This leads to a "snapping" to the outside edge if you drag it outside of the 10x10
                         if column_to_snap > max_column:
                             column_to_snap = max_column
+                        
+                        # Same as above but with row.
+                        # It IS possible that it snaps to the max of both columns and rows, so these can't be elifs
                         if row_to_snap > max_row:
                             row_to_snap = max_row
+
+                        # Checks if the columnn is below 0 (to the left of the grid)
                         if column_to_snap < 0:
                             column_to_snap = 0
+
+                        # Checks if the rows is below 0 (above the grid)
                         if row_to_snap < 0:
                             row_to_snap = 0
 
                         # Moves the ship to snap position
+                        # Force move forced a ship into a position by setting its UPPER LEFT corner
+                        # This takes the upper left of the grid and adds a multiple of the grid size to put it into the correct position
                         dragged_object.force_move(grid_upper_left_x + GRID_SIZE * column_to_snap,grid_upper_left_y + GRID_SIZE * row_to_snap)
 
+                        # Marks where the head of the ship is so we can mark it
                         head_position = (row_to_snap+1, chr(ord('A') + column_to_snap))
+
+                        # Checks whether the ship is currently horizontal or vertical
                         if dragged_object.is_horizontal:
+                            # Calculates the tail by using the size and which orientation it's in
                             tail_position = (row_to_snap + 1, chr(ord('A') + column_to_snap + dragged_object.size - 1))
                         else:
+                            # Same as above but if it's vertical
                             tail_position = (row_to_snap + dragged_object.size, chr(ord('A') + column_to_snap))
                         
+                        # Variable to hold all of the cords between the head and tail (inclusive)
                         coords_to_add = set()
-                        errored = False
+                        # Variable to hold whether or not there is an overlap
+                        overlap = False
+
+                        # Loops a number of times equal to the number of tiles the ship is
                         for i in range(dragged_object.size):
+
+                            # If it's currently horizontal
                             if dragged_object.is_horizontal:
+                                # Goes tile by tile right
                                 coord = (head_position[0], chr(ord(head_position[1])+i))
-                            else:
+                            else: # Otherwise
+                                # Goes tile by tile down
                                 coord = (head_position[0]+i, head_position[1])
                             
+                            # If the coord we calculated is already in the set of taken_positions then there is already a ship there
+                            # We remove a ship's coords from taken_positions when its picked up, so there shouldn't be any issues with a ship seeing its own coords
                             if coord in taken_positions:
-                                log(f" {coord} OVERLAP")
+                                
+                                # If the object is vertical we have to rotate it back to horizontal before we move back to the ship box
                                 if not dragged_object.is_horizontal:
                                     dragged_object.rotate()
+                                
+                                # Force the ship object back to where it was created
                                 dragged_object.force_move(dragged_object.original_pos[0], dragged_object.original_pos[1])
-                                errored = True
+
+                                # Flips our indicator variable that there was an overlap to ensure it's not added to the taken positions/ship placements
+                                overlap = True
+
+                                # Breaks out of loop once we find the FIRST overlap
                                 break
+
                             else:
+
+                                # If there's no overlap, we simple add the coord to our temporary set that holds all of the coords for the currently-being-dropped ship
                                 coords_to_add.add(coord)
 
-                            if not errored:
+                            # If there were NO overlaps
+                            if not overlap:
+                                # Go through the temporary set and add it to the taken positions
                                 for internal_coord in coords_to_add:
                                     taken_positions.add(internal_coord)
-                                ship_positions[dragged_object.size] = (head_position, tail_position)
-                                    
 
-                        #print(current_coords)
+                                # Then add the ship to dictonary for tracking which ships have been placed
+                                ship_positions[dragged_object.size] = (head_position, tail_position)
                         
                         # stop dragging the boat
                         dragged_object.dragging = False
                         dragged_object = None
-
-                        # if len(ship_positions.keys()) == len(tug_boats):
-                        #     all_ships_placed = True
-                        # else:
-                        #     all_ships_placed = False
-
-                        log(f"POST EVERYTHING: {taken_positions} | {ship_positions}")
+                        
 
                 # On the correct keydown event, rotate the ship
                 if event.type == pygame.KEYDOWN:

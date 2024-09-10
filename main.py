@@ -71,9 +71,7 @@ def main():
     gs.turn = 2
     place_ships(2)
     gs.turn = 1
-
     
-
     ## MAIN LOOP ##
     # draw the large "GAME START" text
     ui.do_text_screen("GAME START!")
@@ -104,5 +102,3 @@ def main():
 if __name__ == "__main__":
     # parse command line args here if wanted
     main()
-
-

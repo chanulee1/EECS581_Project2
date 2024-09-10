@@ -1,3 +1,13 @@
+"""
+main.py
+Authors:
+    - Michael Stang
+Date: 9/5/2024
+
+Purpose: command line based interface for testing game logic before UI is fully implemented
+Inputs: User input while running via "input"
+"""
+
 from GameState.GameState import *
 
 def main():
