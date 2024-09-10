@@ -263,23 +263,28 @@ class UIDriver:
 
                         GRID_SIZE = 40
 
+                        # Marks the upper left of the placement grid
                         grid_upper_left_x = (self.width/2) - (GRID_SIZE * 5)
                         grid_upper_left_y = (self.height/3) - (GRID_SIZE * 5)
 
+                        # Gets the current position of the block as its being "Dropped"
                         before_x, before_y = dragged_object.rect.topleft
 
+                        # Calculates which column and row the upper left is closest to
                         column_to_snap = round(((before_x) - grid_upper_left_x)/40)
                         row_to_snap = round(((before_y) - grid_upper_left_y)/40)
 
+                        # Declares variables to enable snapping even when user is outside of grid
                         max_column = 9
                         max_row = 9
 
+                        # Based on the orientation of the ship, reduces maxes to ensure nothing goes off the grid
                         if dragged_object.is_horizontal:
                             max_column -= dragged_object.size - 1
                         else:
-                            print("AAAA")
                             max_row -= dragged_object.size - 1
 
+                        # Checks if the ship is outside of the bounds of the grid, and if so, adjusts to put it onto the placement grid
                         if column_to_snap > max_column:
                             column_to_snap = max_column
                         if row_to_snap > max_row:
@@ -289,6 +294,7 @@ class UIDriver:
                         if row_to_snap < 0:
                             row_to_snap = 0
 
+                        # Moves the ship to snap position
                         dragged_object.force_move(grid_upper_left_x + 40 * column_to_snap,grid_upper_left_y + 40 * row_to_snap)
 
                         # stop dragging the boat
