@@ -593,7 +593,7 @@ class UIDriver:
         # Updates view
         pygame.display.update()
 
-    def draw_legends(self):
+    def draw_legends(self): #draws key on to window during game play
         """Draws the legend for the boards"""
         font = pygame.font.SysFont("Arial", 20)
         spacing = self.p1_laptop.tile_size  # Spacing between each char
@@ -654,36 +654,36 @@ class UIDriver:
 
     # Draw each item in the legend
         legend_items = [
-        ((255,255,255), "Miss"),
-        ((255,0,0), "Hit"),
-        ((100,100,100), "Ship"),
-        ((73, 160, 169), "Water")]
+        ((255,255,255), "Miss"),    #white
+        ((255,0,0), "Hit"),         #red
+        ((100,100,100), "Ship"),    #gray
+        ((73, 160, 169), "Water")]  #blue
 
         window_width, window_height = self.window.get_size()
-        x = int(window_width * 0.4) 
-        y = int(window_height * 0.7)
+        x = int(window_width * 0.1) 
+        y = int(window_height * 0.85)
 
         # Draw key text
-        bigger_font = pygame.font.SysFont("Arial", 25, bold = True)
-        text = bigger_font.render('Key', True, (255,255,255))
-        text_rect = text.get_rect(center=(x+125, y - 30))
+        bigger_font = pygame.font.SysFont("Arial", 20, bold = True)
+        text = bigger_font.render('Key:', True, (255,255,255))
+        text_rect = text.get_rect(center=(window_width * 0.1, y - 40))
         self.window.blit(text, text_rect)
 
         for i, (color, label) in enumerate(legend_items):
             # Calculate positions
-            pos_x = x + spacing
-            pos_y = y + i * (40)
+            pos_x = x + i * (spacing * 2 + 60)
+            pos_y = y #keep their y the same to be aligned
             
             # Draw colored square
             color_rect = pygame.Rect(pos_x, pos_y, 30, 30)
             pygame.draw.rect(self.window, color, color_rect)
             
             # Draw border around the square
-            pygame.draw.rect(self.window, (0, 0, 0), color_rect, 2)  # 2 is the border width
+            pygame.draw.rect(self.window, (0, 0, 0), color_rect, 1)  # 2 is the border width
             
             # Draw label text
             text = font.render(label, True, (0, 0, 0))
-            text_rect = text.get_rect(midleft=(pos_x + 30 + spacing, pos_y + 30 // 2))
+            text_rect = text.get_rect(midleft=(pos_x + 40, pos_y + 15))
             self.window.blit(text, text_rect)
 
         pygame.display.update()
