@@ -3,6 +3,7 @@ Laptop.py
 Authors:
     - Pierce Lane
     - Chase Horner
+    - Katharine Swann
 Date: 9/6/2024
 
 Purpose: holds the laptop (grid) objects and can do some functions on them
@@ -48,6 +49,9 @@ class Laptop:
         # redefine the grid
         self.their_grid = []
         self.our_grid = []
+
+        y_offset = self.screen_height * 0.1
+
         # loop through it
         for row in range(Laptop.SIZE_Y):
             # don't forget to add a row list
@@ -58,7 +62,7 @@ class Laptop:
                 # do some math to find left and top pixel values
                 ### NOTE: I'm not sure if this math is correct! ###
                 left = (self.screen_wid/3) - (self.tile_size * 5) + col * self.tile_size
-                top = (self.screen_height/3) - (self.tile_size * 5) + row * self.tile_size
+                top = (self.screen_height/3) - (self.tile_size * 5) + row * self.tile_size + y_offset
                 
                 # add tile size to get bottom, right values
                 right = left + self.tile_size

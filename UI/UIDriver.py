@@ -116,7 +116,7 @@ class UIDriver:
         go_y = int(window_height * 0.75)- rect_height // 2  #75% down from the top
 
         #Add an offset gray rectangle for shadow effect
-        pygame.draw.rect(surface, (100, 100, 100) , (go_x + 5, go_y + 5, rect_width, rect_height), border_radius=10)
+        pygame.draw.rect(surface, (0, 0, 0) , (go_x + 5, go_y + 5, rect_width, rect_height), border_radius=10)
 
         # Main rectangle with rounded corners
         pygame.draw.rect(surface, rect_color, (go_x, go_y, rect_width, rect_height), border_radius=10)
@@ -170,7 +170,7 @@ class UIDriver:
         rect_y = int(self.height * 0.55)- rect_height // 2
 
         #Add an offset gray rectangle for shadow effect
-        pygame.draw.rect(self.window, (100, 100, 100) , (rect_x + 5, rect_y + 5, rect_width, rect_height), border_radius=10)
+        pygame.draw.rect(self.window, (0, 0, 0) , (rect_x + 5, rect_y + 5, rect_width, rect_height), border_radius=10)
 
         # Main rectangle with rounded corners
         pygame.draw.rect(self.window, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=10)
@@ -679,10 +679,10 @@ class UIDriver:
             pygame.draw.rect(self.window, color, color_rect)
             
             # Draw border around the square
-            pygame.draw.rect(self.window, (255,255,255), color_rect, 2)  # 2 is the border width
+            pygame.draw.rect(self.window, (0, 0, 0), color_rect, 2)  # 2 is the border width
             
             # Draw label text
-            text = font.render(label, True, (255,255,255))
+            text = font.render(label, True, (0, 0, 0))
             text_rect = text.get_rect(midleft=(pos_x + 30 + spacing, pos_y + 30 // 2))
             self.window.blit(text, text_rect)
 
@@ -765,7 +765,7 @@ class UIDriver:
     def draw_button(self, surface, center, radius, symbol, button_color, text_color):
         """Draws circle with symbol button for main_menu"""
         #Draw offset circle for shadow effect
-        pygame.draw.circle(surface, (100, 100, 100), (center[0] + 5, center[1] + 5), radius)
+        pygame.draw.circle(surface, (0, 0, 0), (center[0] + 5, center[1] + 5), radius)
 
         #Draw actual button circle
         pygame.draw.circle(surface, button_color, center, radius)
