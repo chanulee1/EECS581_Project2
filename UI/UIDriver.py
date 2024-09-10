@@ -714,11 +714,22 @@ class UIDriver:
         self.erase()
     
     def draw_gameover(self):
-        """Draws the gameover screen"""
+        """Draws the gameover screen
+        
+        @raise ValueError: if an invalid laptop is loaded into self.cur_laptop"""
+
+        # check who won
+        if self.cur_laptop is self.p1_laptop:
+            gameover_text = "Player 1 Wins!"
+        elif self.cur_laptop is self.p2_laptop:
+            gameover_text = "Player 2 Wins!"
+        else: # make sure to do error checking
+            raise ValueError("Invalid player winning")
+        
         self.window.fill(self.bgcolor)
         font_size = int(self.width*.1) #adjusts font size to be 0.1 of width
         font = pygame.font.SysFont("Arial", font_size, bold=True) #set font with size
-        text_surface = font.render("GAME OVER.", True, (255, 0, 0)) #color = red rn
+        text_surface = font.render(gameover_text, True, (255, 0, 0)) #color = red rn
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
         self.window.blit(text_surface, text_rect) #draw the text
         pygame.display.update()  #update the display
