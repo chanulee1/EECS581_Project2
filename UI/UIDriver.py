@@ -707,9 +707,9 @@ class UIDriver:
             outline_rect = text_rect.copy()
             outline_rect.x += offset_x
             outline_rect.y += offset_y
-            self.window.blit(text_surface_black, outline_rect)
+            self.window.blit(text_surface_white, outline_rect)
     
-        self.window.blit(text_surface_white, text_rect) #draw title
+        self.window.blit(text_surface_black, text_rect) #draw title
         pygame.display.update() #update the display
 
     def draw_button(self, surface, center, radius, symbol, button_color, text_color):
