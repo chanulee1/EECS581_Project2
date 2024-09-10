@@ -260,10 +260,36 @@ class UIDriver:
                 if event.type == pygame.MOUSEBUTTONUP:
                     if dragged_object:
                         # snap to grid
-                        
 
+                        GRID_SIZE = 40
 
+                        grid_upper_left_x = (self.width/2) - (GRID_SIZE * 5)
+                        grid_upper_left_y = (self.height/3) - (GRID_SIZE * 5)
 
+                        before_x, before_y = dragged_object.rect.topleft
+
+                        column_to_snap = round(((before_x) - grid_upper_left_x)/40)
+                        row_to_snap = round(((before_y) - grid_upper_left_y)/40)
+
+                        max_column = 9
+                        max_row = 9
+
+                        if dragged_object.is_horizontal:
+                            max_column -= dragged_object.size - 1
+                        else:
+                            print("AAAA")
+                            max_row -= dragged_object.size - 1
+
+                        if column_to_snap > max_column:
+                            column_to_snap = max_column
+                        if row_to_snap > max_row:
+                            row_to_snap = max_row
+                        if column_to_snap < 0:
+                            column_to_snap = 0
+                        if row_to_snap < 0:
+                            row_to_snap = 0
+
+                        dragged_object.force_move(grid_upper_left_x + 40 * column_to_snap,grid_upper_left_y + 40 * row_to_snap)
 
                         # stop dragging the boat
                         dragged_object.dragging = False

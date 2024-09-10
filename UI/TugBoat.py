@@ -20,6 +20,7 @@ class TugBoat:
         self.dragging = False #boolean determining if boat is being dragged or not
         self.size = size 
         self.surface = surface
+        self.is_horizontal = True
 
     def draw(self): #method to draw tugboats
         pygame.draw.rect(self.surface, self.color, self.rect, border_radius=10)
@@ -55,9 +56,16 @@ class TugBoat:
                     boat_y = go_y + rect_height  # move down 
 
             self.rect.topleft = (boat_x, boat_y)
+
+    def force_move(self, x, y):
+        self.rect.topleft = (x, y)
         
     def rotate(self):
         """Basic function that rotates the boat"""
 
         # Swaps the height and width of the boat
+        if self.is_horizontal:
+            self.is_horizontal = False
+        else:
+            self.is_horizontal = True
         self.rect.width, self.rect.height = self.rect.height, self.rect.width
