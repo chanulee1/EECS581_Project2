@@ -2,6 +2,7 @@
 Laptop.py
 Authors:
     - Pierce Lane
+    - Chase Horner
 Date: 9/6/2024
 
 Purpose: holds the laptop (grid) objects and can do some functions on them
