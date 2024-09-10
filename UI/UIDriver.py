@@ -729,9 +729,17 @@ class UIDriver:
         self.window.fill(self.bgcolor)
         font_size = int(self.width*.1) #adjusts font size to be 0.1 of width
         font = pygame.font.SysFont("Arial", font_size, bold=True) #set font with size
-        text_surface = font.render(gameover_text, True, (255, 0, 0)) #color = red rn
-        text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
-        self.window.blit(text_surface, text_rect) #draw the text
+
+        text_surface_white = font.render(gameover_text, True, (255, 255, 255)) #solid white
+        text_surface_black = font.render(gameover_text, True, (0, 0, 0))  #black outline
+        text_rect = text_surface_white.get_rect(center=(self.width/2, self.height/2))
+
+        drop_shadow = text_rect.copy()
+        drop_shadow.x += 7
+        drop_shadow.y += 7
+        
+        self.window.blit(text_surface_black, drop_shadow)
+        self.window.blit(text_surface_white, text_rect)
         pygame.display.update()  #update the display
 
     def draw_main_menu(self):
@@ -750,16 +758,6 @@ class UIDriver:
         
         self.window.blit(text_surface_black, drop_shadow)
         self.window.blit(text_surface_white, text_rect)
-
-        '''for offset_x, offset_y in [(-2, -2), (-2, 2), (2, -2), (10, 10)]:
-            #adding outlines around, offset last corrdinate to mimic drop shadow bottom right
-            outline_rect = text_rect.copy()
-            outline_rect.x += offset_x
-            outline_rect.y += offset_y
-            self.window.blit(text_surface_white, outline_rect)
-    
-        self.window.blit(text_surface_black, text_rect) #draw title'''
-        
         pygame.display.update() #update the display
 
     def draw_button(self, surface, center, radius, symbol, button_color, text_color):
