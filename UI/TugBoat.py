@@ -17,7 +17,7 @@ class TugBoat:
     def __init__(self, x, y, size, surface):
         #note: boats are able to be dragged off screen
         self.rect = pygame.Rect(x, y, self.tile_size*size, self.tile_size)
-        self.color = (100, 100,100) #gray
+        self.color = (180, 180, 180) #gray
         self.dragging = False #boolean determining if boat is being dragged or not
         self.size = size 
         self.surface = surface

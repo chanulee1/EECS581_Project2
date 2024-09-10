@@ -549,14 +549,17 @@ class UIDriver:
 
 
     def draw_grid(self):
-        """A test function used to draw two grids, we can use these for laptops if we want, but it gives a start"""
+        """Draws the ship placement grid, uses its own thing instead of Laptop.py"""
         
         # Declares it a 10x10
         GRID_ROWS = 10
         GRID_COLS = 10
 
         # Size of each box
-        GRID_SIZE = 40
+        GRID_SIZE = self.p1_laptop.tile_size
+
+        left = self.width/2 - GRID_SIZE*5
+        top = self.height/3 - GRID_SIZE*5
 
         # Loops to create a grid
         for row in range(GRID_ROWS):
@@ -564,17 +567,50 @@ class UIDriver:
                 rect = pygame.Rect((self.width/2) - (GRID_SIZE * 5) + col * GRID_SIZE, (self.height/3) - (GRID_SIZE * 5) + row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
 
+        ## SHIP PLACEMENT BOARD LEGENDS
+        font = pygame.font.SysFont("Arial", 20)
+        number_x = int(left - GRID_SIZE/2)  # Starting x-coordinate for the numbers
+        number_y = int(top + GRID_SIZE/2)  # Starting y-coordinate for the numbers
+        # Draw the numbers 1-10 in a vertical bar
+        for i in range(10):
+            number = str(i + 1)
+            text_surface = font.render(number, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(number_x, number_y))
+            self.window.blit(text_surface, text_rect)
+            number_y += GRID_SIZE
+
+        # define where the board's letters should start
+        letter_x = int(left + GRID_SIZE/2)  # Starting x-coordinate for the letters
+        letter_y = int(top - GRID_SIZE/2)  # Adjusted y-coordinate for the letters
+        #Draw the letters A-J in a horizontal bar
+        for i in range(10):
+            letter = chr(ord('A') + i)  # Get the corresponding letter
+            text_surface = font.render(letter, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(letter_x, letter_y))
+            self.window.blit(text_surface, text_rect)
+            letter_x += GRID_SIZE
+
         # Updates view
         pygame.display.update()
 
     def draw_legends(self):
         """Draws the legend for the boards"""
         font = pygame.font.SysFont("Arial", 20)
-        spacing = 40  # Spacing between each char
+        spacing = self.p1_laptop.tile_size  # Spacing between each char
 
+        # get the top left coordinates of the left grid
+        our_left = self.p1_laptop.our_grid[0][0].top_left[0]
+        our_top = self.p1_laptop.our_grid[0][0].top_left[1]
+
+        # get the top left coordinates of the right grid
+        their_left = self.p1_laptop.their_grid[0][0].top_left[0]
+        their_top = self.p1_laptop.their_grid[0][0].top_left[1]
+
+
+        ## LEFT BOARD LEGENDS
+        number_x = int(our_left - spacing/2)  # Starting x-coordinate for the numbers
+        number_y = int(our_top + spacing/2)  # Starting y-coordinate for the numbers
         # Draw the numbers 1-10 in a vertical bar (left board)
-        number_x = int(295)  # Starting x-coordinate for the numbers
-        number_y = int(105)  # Starting y-coordinate for the numbers
         for i in range(10):
             number = str(i + 1)
             text_surface = font.render(number, True, (255, 255, 255))
@@ -582,9 +618,10 @@ class UIDriver:
             self.window.blit(text_surface, text_rect)
             number_y += spacing
 
-        #Draw the letters A-J in a (horizontal bar)
-        letter_x = int(330)  # Starting x-coordinate for the letters
-        letter_y = int(75)  # Adjusted y-coordinate for the letters
+        # define where the left board's letters should start
+        letter_x = int(our_left + spacing/2)  # Starting x-coordinate for the letters
+        letter_y = int(our_top - spacing/2)  # Adjusted y-coordinate for the letters
+        #Draw the letters A-J in a horizontal bar (left board)
         for i in range(10):
             letter = chr(ord('A') + i)  # Get the corresponding letter
             text_surface = font.render(letter, True, (255, 255, 255))
@@ -592,9 +629,12 @@ class UIDriver:
             self.window.blit(text_surface, text_rect)
             letter_x += spacing
 
-        # Draw the numbers 1-10 in a vertical bar (left board)
-        number_x = int(1180)  # Starting x-coordinate for the numbers
-        number_y = int(105)  # Starting y-coordinate for the numbers
+
+        ## RIGHT BOARD LEGENDS
+        # Draw the numbers 1-10 in a vertical bar (right board)
+        # define where our numbers should start
+        number_x = int(their_left - spacing/2)  # Starting x-coordinate for the numbers
+        number_y = int(their_top + spacing/2)  # Starting y-coordinate for the numbers
         for i in range(10):
             number = str(i + 1)
             text_surface = font.render(number, True, (255, 255, 255))
@@ -603,8 +643,8 @@ class UIDriver:
             number_y += spacing
 
         #Draw the letters A-J in a (horizontal bar)
-        letter_x = int(780)  # Starting x-coordinate for the letters
-        letter_y = int(75)  # Adjusted y-coordinate for the letters
+        letter_x = int(their_left + spacing/2)  # Starting x-coordinate for the letters
+        letter_y = int(their_top - spacing/2)  # Adjusted y-coordinate for the letters
         for i in range(10):
             letter = chr(ord('A') + i)  # Get the corresponding letter
             text_surface = font.render(letter, True, (255, 255, 255))
@@ -649,12 +689,6 @@ class UIDriver:
         pygame.display.update()
 
 
-    def get_ship_placements(self):
-        """Gets the pandas array representing the current laptop's ship placements
-
-        @return: pandas array representing current ship placements"""
-        pass
-
     def do_text_screen(self, text):
         """Screen to ask the players to switch the laptop
 
@@ -679,16 +713,23 @@ class UIDriver:
         # then reset our whole screen
         self.erase()
     
-    def draw_shot_result(self, result):
-        """draws either miss, hit, sunk screen based on result"""
-        pass
-
     def draw_gameover(self):
-        """Draws the gameover screen"""
+        """Draws the gameover screen
+        
+        @raise ValueError: if an invalid laptop is loaded into self.cur_laptop"""
+
+        # check who won
+        if self.cur_laptop is self.p1_laptop:
+            gameover_text = "Player 1 Wins!"
+        elif self.cur_laptop is self.p2_laptop:
+            gameover_text = "Player 2 Wins!"
+        else: # make sure to do error checking
+            raise ValueError("Invalid player winning")
+        
         self.window.fill(self.bgcolor)
-        font_size = int(self.height * 0.3) #adjusts font size to 0.3 of height       
+        font_size = int(self.width*.1) #adjusts font size to be 0.1 of width
         font = pygame.font.SysFont("Arial", font_size, bold=True) #set font with size
-        text_surface = font.render("GAME OVER.", True, (255, 0, 0)) #color = red rn
+        text_surface = font.render(gameover_text, True, (255, 0, 0)) #color = red rn
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
         self.window.blit(text_surface, text_rect) #draw the text
         pygame.display.update()  #update the display
