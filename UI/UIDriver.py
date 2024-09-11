@@ -591,7 +591,7 @@ class UIDriver:
             letter_x += GRID_SIZE
 
         ## DRAW THE TEXT
-        font = pygame.font.SysFont("Arial", 40)
+        font = pygame.font.SysFont("Arial", 30)
         text = font.render("Press R to Rotate", True, (255, 255, 255))
         text_rect = text.get_rect(center = (letter_x + GRID_SIZE*GRID_COLS/2, letter_y + GRID_SIZE*GRID_ROWS/2))
         self.window.blit(text, text_rect)
