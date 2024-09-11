@@ -18,7 +18,7 @@ def create_blank_board():
 
     @return DataFrame: Returns a DataFrame that represents the board, it is filled with ~.
     """
-    #Using Panda functionaility, creating a blank 10x10 board full of ~ 
+    # Using Panda functionaility, creating a blank 10x10 board full of ~ 
     return pd.DataFrame('~', index=list(range(1,11)), columns=['A','B','C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
 
 
@@ -27,12 +27,14 @@ def verify_coord(coord: tuple[int, str]):
     It is valid if it's Int is between 1 and 10 (inclusive) and its String is in between 'A'-'J' (inclusive)
     coord[0] = Int/Row
     coord[1] = String/Column
-    This is slightly backwards from the usual order the elements are said in Battleship, but I'm sticking with it this way to match Panda's conventions
+    This is slightly backwards from the usual order the elements are said in Battleship, but I'm sticking with it 
+    this way to match Panda's conventions
 
     @param (int, string) coord: Given a tuple with an int representing the row and a string representing the column
     @return Bool: Returns True if it is a valid position and False if it is not
     """
-    # Simple one line condition check. This doesn't NEED to be a function, but it makes the code much more readable and allows for easy additional error checking if needed later.
+    # Simple one line condition check. This doesn't NEED to be a function, but it makes the code much more readable 
+    # and allows for easy additional error checking if needed later.
     return ((coord[0] >= 1 and coord[0] <= 10) and (coord[1] in ['A','B','C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']))
 
 
@@ -60,14 +62,14 @@ class GameState:
         @return Dataframe
         """
         friendly_board = (self.player_one_board if self.turn == 1 else self.player_two_board)
-        return friendly_board
+        return friendly_board # Friendly board = player who's turn it is
     
     def enemy_board(self):
         """Quick function to access the board whose turn it is not
         @return Dataframe
         """
         enemy_board = (self.player_one_board if self.turn == 2 else self.player_two_board)
-        return enemy_board
+        return enemy_board # Enemy board = opponent
 
     def fire(self, coord: tuple[int, str]):
         """Main method used to calculate the results of each player firing at a given coord
@@ -134,7 +136,7 @@ class GameState:
                 # This works for detecting sunk ships since there aren't multiple of the same length ships.
                 if opponent_board.isin([opponent_board.loc[coord[0], coord[1]][0]]).any().any():
                     
-                    #Returns "hit" when the coord has a ship, but doesn't cause a sink
+                    # Returns "hit" when the coord has a ship, but doesn't cause a sink
                     return "hit"
                 
                 else:
@@ -197,13 +199,13 @@ class GameState:
             
         ## Place Ship
         
-        #Establish which board is being edited
+        # Establish which board is being edited
         current_board = (self.player_one_board if self.turn == 1 else self.player_two_board)
 
         row = start[0] # Ints
         column = start[1] # Strings
 
-        #Iterates over whole ship length, each iteration places str(ship_length) at (row, col) and then increments/decrements row/col accordingly
+        # Iterates over whole ship length, each iteration places str(ship_length) at (row, col) and then increments/decrements row/col accordingly
         for _ in range(ship_length):
 
             # Checks to make sure we're not overlapping
