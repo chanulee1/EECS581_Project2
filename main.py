@@ -38,6 +38,7 @@ def main():
         # start by erasing the UI and redrawing GO button
         ui.erase()
         # then draw the transition screen for each player
+        font = pygame.font.SysFont('Arial', 36)
         ui.do_text_screen(f"Player {player}'s Turn")
         
         #Loop to keep trying to place ships until they are all successfully placed
