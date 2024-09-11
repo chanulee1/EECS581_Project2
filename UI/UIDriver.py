@@ -547,7 +547,8 @@ class UIDriver:
 
 
     def draw_grid(self):
-        """Draws the ship placement grid, uses its own thing instead of Laptop.py"""
+        """Draws the ship placement grid, uses its own thing instead of Laptop.py
+        Also draws the Press R To Rotate text"""
         
         # Declares it a 10x10
         GRID_ROWS = 10
@@ -589,8 +590,12 @@ class UIDriver:
             self.window.blit(text_surface, text_rect)
             letter_x += GRID_SIZE
 
-
-
+        ## DRAW THE TEXT
+        font = pygame.font.SysFont("Arial", 40)
+        text = font.render("Press R to Rotate", True, (255, 255, 255))
+        text_rect = text.get_rect(center = (letter_x + GRID_SIZE*GRID_COLS/2, letter_y + GRID_SIZE*GRID_ROWS/2))
+        self.window.blit(text, text_rect)
+        
         # Update the display
         pygame.display.update()
 
