@@ -569,25 +569,6 @@ class UIDriver:
         number_x = int(left - GRID_SIZE/2)  # Starting x-coordinate for the numbers
         number_y = int(top + GRID_SIZE/2)  # Starting y-coordinate for the numbers
         
-        # Draw the numbers 1-10 in a vertical bar
-        for i in range(10):
-            number = str(i + 1)
-            text_surface = font.render(number, True, (255, 255, 255))
-            text_rect = text_surface.get_rect(center=(number_x, number_y))
-            self.window.blit(text_surface, text_rect)
-            number_y += GRID_SIZE
-
-        # Define where the board's letters should start
-        letter_x = int(left + GRID_SIZE/2)  # Starting x-coordinate for the letters
-        letter_y = int(top - GRID_SIZE/2)  # Adjusted y-coordinate for the letters
-        # Draw the letters A-J in a horizontal bar
-        for i in range(10):
-            letter = chr(ord('A') + i)  # Get the corresponding letter
-            text_surface = font.render(letter, True, (255, 255, 255))
-            text_rect = text_surface.get_rect(center=(letter_x, letter_y))
-            self.window.blit(text_surface, text_rect)
-            letter_x += GRID_SIZE
-
         # Update the display
         pygame.display.update()
 
