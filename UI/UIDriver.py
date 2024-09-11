@@ -11,7 +11,7 @@ Date: 9/2/2024
 Purpose: drives the UI of the battleship game
 """
 from Logger.Logger import *
-import pygame1
+import pygame
 from time import sleep
 from UI.TugBoat import *
 from UI.Laptop import *
