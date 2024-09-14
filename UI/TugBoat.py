@@ -16,30 +16,35 @@ class TugBoat:
 
     def __init__(self, x, y, size, surface):
         self.rect = pygame.Rect(x, y, self.tile_size*size, self.tile_size)
-        self.color = (180, 180, 180) # Gray
-        self.dragging = False # Boolean determining if boat is being dragged or not
+        self.color = (180, 180, 180)
+        self.dragging = False 
         self.size = size 
         self.surface = surface
         self.is_horizontal = True
         self.original_pos = self.rect.topleft
 
-    def draw(self): # Method to draw tugboats
+    def draw(self): 
+        #Method to draw tugboat
         pygame.draw.rect(self.surface, self.color, self.rect, border_radius=10)
 
     def update(self, mouse_x, mouse_y):
-        window_width, window_height = self.surface.get_size() # Get window size for reference
+        #Calculate window size
+        window_width, window_height = self.surface.get_size() 
+        rect_width = int(window_width * 0.2) 
+        rect_height = int(window_height * 0.1)
 
-        rect_width = int(window_width * 0.2)   # 20% of the window's width
-        rect_height = int(window_height * 0.1)  # 10% of the window's height
-
-        go_x = int(window_width * 0.5) - rect_width // 2 # Dimensions for go button from UIDriver.py
+        #Dimensions for go button from UIDriver.py
+        go_x = int(window_width * 0.5) - rect_width // 2 
         go_y = int(window_height * 0.75) - rect_height // 2
 
-        if self.dragging: # This is new code to attempt to keep boats within the window
-            boat_x = mouse_x - self.rect.width // 2  # Take half width and height to center baots
+        #When dragging (event mousedown is on boat before event mouseup)
+        if self.dragging: 
+            # Take half width and height to center boats
+            boat_x = mouse_x - self.rect.width // 2  
             boat_y = mouse_y - self.rect.height // 2 
 
-            boat_x = max(0, min(boat_x, window_width - self.rect.width))  # Lock locations 
+            #Lock locations 
+            boat_x = max(0, min(boat_x, window_width - self.rect.width))  
             boat_y = max(0, min(boat_y, window_height - self.rect.height))
 
             boat_rect = pygame.Rect(boat_x, boat_y, self.rect.width, self.rect.height)
@@ -49,14 +54,18 @@ class TugBoat:
             # to prevent collision with GO button when placing ships
             if boat_rect.colliderect(go_button_rect):
                 if boat_x < go_x:
-                    boat_x = go_x - self.rect.width # Move left
+                    # Move left
+                    boat_x = go_x - self.rect.width 
                 elif boat_x + self.rect.width > go_x + rect_width:
-                    boat_x = go_x + rect_width  # Move right
+                    # Move right
+                    boat_x = go_x + rect_width  
 
                 if boat_y < go_y:
-                    boat_y = go_y - self.rect.height  # Move up
+                    # Move up
+                    boat_y = go_y - self.rect.height  
                 elif boat_y + self.rect.height > go_y + rect_height:
-                    boat_y = go_y + rect_height  # Move down 
+                    # Move down 
+                    boat_y = go_y + rect_height  
 
             self.rect.topleft = (boat_x, boat_y)
 

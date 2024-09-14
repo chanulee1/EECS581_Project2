@@ -76,6 +76,8 @@ def main():
     ## MAIN LOOP ##
     # draw the large "GAME START" text
     ui.do_text_screen("GAME START!")
+    
+    #Loop while gameover flag is False
     gameover = False
     while not gameover:
         #ask the players to switch who is playing
@@ -83,8 +85,10 @@ def main():
         #saves the coordinates the user shot at
         shot = ui.wait_for_shot(gs)
         result = gs.fire(shot) #shoot your shot baby
+        #set flag to True and end loop
         if result =='gameover':
             gameover = True
+        #return result - either "Hit!" "Miss!" or sunk
         else:
             if 'sunk' in result:
                 message = f'You Sunk Enemy Ship {result[-1]}'
@@ -92,14 +96,13 @@ def main():
                 message = result.capitalize() + '!'
             ui.do_text_screen(message)
 
+    #Gameover screen
     ui.draw_gameover()
     sleep(2)
-    # play again feature?
 
-    # close the window
+    #Close the window
     pygame.quit()
 
 
 if __name__ == "__main__":
-    # parse command line args here if wanted
     main()

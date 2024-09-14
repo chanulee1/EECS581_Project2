@@ -11,6 +11,7 @@ Purpose: holds the laptop (grid) objects and can do some functions on them
 import pygame 
 
 class Tile:
+    """Object for each spot on laptop grid, used to track location and clicking"""
     def __init__(self, top_left, bottom_right, clickable = False): # Store position
         self.top_left = top_left
         self.bottom_right = bottom_right

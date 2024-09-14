@@ -752,7 +752,8 @@ class UIDriver:
         # Update the display
         pygame.display.update()
 
-    def draw_main_menu(self): # Draws title on main menu page
+    def draw_main_menu(self):
+        """Draws title on main menu page"""
         font = pygame.font.SysFont("Arial", 125, bold=True) # Font style, font size, bold
         title_text = "BATTLESHIP" # Title screen text
         text_surface_white = font.render(title_text, True, (255, 255, 255)) # White
@@ -788,10 +789,12 @@ class UIDriver:
 
     
     def up_button_clicked(self, mouse_x, mouse_y):
+        """Checks if up button is clicked, and increments ship counter"""
         rect_width = 75
         rect_height = 100
         rect_x = int(self.width * 0.5)- rect_width // 2
         rect_y = int(self.height * 0.55)- rect_height // 2
+        #Calculate the location of increase button
         increase_button_center = (rect_x + rect_width + 50, rect_y)
         if ((mouse_x - increase_button_center[0]) ** 2 + (mouse_y - increase_button_center[1]) ** 2) ** 0.5 <= 30:
             # Increments ship_count
@@ -804,10 +807,12 @@ class UIDriver:
 
 
     def down_button_clicked(self, mouse_x, mouse_y):
+        """Checks if down button is clicked, and decrements ship counter"""
         rect_width = 75
         rect_height = 100
         rect_x = int(self.width * 0.5)- rect_width // 2
         rect_y = int(self.height * 0.55)- rect_height // 2
+        #Calculate the location of decrease button
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
         if ((mouse_x - decrease_button_center[0]) ** 2 + (mouse_y - decrease_button_center[1]) ** 2) ** 0.5 <= 30:
             # Increments ship_count
@@ -819,6 +824,7 @@ class UIDriver:
             pygame.display.update()
 
     def erase(self):
+        """Clears whatever is drawn on the page"""
         self.window.fill(self.bgcolor)
 
         # Update the display
