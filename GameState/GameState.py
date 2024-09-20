@@ -1,9 +1,8 @@
 """
 GameState.py
 Authors:
-    - Michael Stang
-    - Chase Horner
-Date: 9/2/2024
+    - Zachary Craig
+Date: 9/19/2024
 
 Purpose: does the backend driving of the battle ship game state
 """
@@ -39,7 +38,7 @@ def verify_coord(coord: tuple[int, str]):
 
 
 class GameState:
-    def __init__(self):
+    def __init__(self, difficulty: str = "pvp"):
         # log("GameState.__init__(self): I'm in GameState!")
 
         # Panda DataFrame representing the board for Player 1
@@ -56,6 +55,23 @@ class GameState:
         
         # Internal tracking int to track how many ship spaces player two has remaining
         self._player_two_ships = 0
+        
+        # String to store AI difficulty
+        # This can be either "easy", "medium", "hard", or "pvp"
+        self.difficulty = difficulty
+    
+    def set_difficulty(self, difficulty: str):
+        """Sets the difficulty of the game
+        @param string difficulty: The difficulty to set the game to. Can be "easy", "medium", "hard", or "pvp"
+        """
+        log(f"Difficulty set to {difficulty}")
+        self.difficulty = difficulty
+        
+    def get_difficulty(self):
+        """Gets the difficulty of the game
+        @return string: The difficulty of the game
+        """
+        return self.difficulty
 
     def friendly_board(self):
         """Quick function to access the board whose turn it is

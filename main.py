@@ -1,9 +1,8 @@
 """
 main.py
 Authors:
-    - Pierce Lane
-    - Chase Horner
-Date: 9/2/2024
+    - Zachary Craig
+Date: 9/19/2024
 
 Purpose: driver file for the battleship game
 Inputs: N/A (-- could add command line args if we wanted to have a headless version)
@@ -26,6 +25,9 @@ def main():
     ui.draw_main_menu()
     # draw the ship number selector
     ui.draw_ship_nums()
+    
+    # draw ai selector
+    ui.draw_ai_selector()
 
     # draw the go button
     ui.draw_go()
@@ -66,7 +68,9 @@ def main():
 
             #Exit the while loop if no errors occurred
             if not error_occurred:
-                break  
+                break
+    
+    gs.set_difficulty(ui.get_difficulty())
 
     place_ships(1)
     gs.turn = 2

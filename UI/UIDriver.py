@@ -1,12 +1,8 @@
 """
 UIDriver.py
 Authors:
-    - Pierce Lane
-    - Holden Vail
-    - Katharine Swann
-    - Chase Horner
-    - Michael Stang
-Date: 9/2/2024
+    - Zachary Craig
+Date: 9/19/2024
 
 Purpose: drives the UI of the battleship game
 """
@@ -72,6 +68,12 @@ class UIDriver:
         self.go_button = None   
         # Number of ships locked in via main menu
         self.ship_count = 3     
+        # Difficulty setting locked in via main menu
+        self.difficulty = "Easy"     
+    
+    def get_difficulty(self):
+        """Returns the difficulty setting"""
+        return self.difficulty
 
     
     def wait_for_go(self, ship_num_menu = False):
@@ -94,6 +96,8 @@ class UIDriver:
                         if (ship_num_menu):
                             self.up_button_clicked(mouse_x, mouse_y)
                             self.down_button_clicked(mouse_x, mouse_y)
+                            self.up_arrow_clicked(mouse_x, mouse_y)
+                            self.down_arrow_clicked(mouse_x, mouse_y)
                         waiting = not self.go_clicked(mouse_x, mouse_y)
 
     def draw_go(self, surface = None):
@@ -154,6 +158,43 @@ class UIDriver:
 
         # Check if the mouse click is within the button's rectangle
         return (go_x <= mouse_x <= go_x + rect_width) and (go_y <= mouse_y <= go_y + rect_height)
+    
+    def draw_ai_selector(self):
+        """Draws the AI selector control"""
+        # Draw spindown selector
+        rect_color = (16, 64, 128)
+        rect_width = 200
+        rect_height = 75
+        rect_x = int(self.width * 0.20)- rect_width // 2
+        rect_y = int(self.height * 0.55)- rect_height // 2
+        
+        # Add an offset gray rectangle for shadow effect
+        pygame.draw.rect(self.window, (0,0,0), (rect_x + 5, rect_y + 5, rect_width, rect_height), border_radius=10)
+        
+        # Main rectangle with rounded corners
+        pygame.draw.rect(self.window, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=10)
+        
+        # Add the text of ship_count to the spindown selector rectangle
+        font = pygame.font.SysFont("Arial", 50)
+        text_surface = font.render(str(self.difficulty), True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + rect_height // 2))
+        self.window.blit(text_surface, text_rect)
+        
+        # Add the section header for the AI selector
+        font = pygame.font.SysFont("Arial", 30)
+        text_surface = font.render(str("Difficulty:"), True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(int(self.width * 0.20), int(self.height * 0.4)))
+        self.window.blit(text_surface, text_rect)
+        
+        
+        # Draw ship increase button represented by a plus sign (+)
+        option_button_up = (rect_x + rect_width + 50, rect_y)
+        self.draw_button(self.window, option_button_up, 30, "\u2191", (16, 64, 128), (255, 255, 255))
+
+        # Draw ship decrease button represented by a minus sign (-)
+        option_button_down = (rect_x + rect_width + 50, rect_y + rect_height)
+        self.draw_button(self.window, option_button_down, 30, "\u2193", (16, 64, 128), (255, 255, 255))
+        
 
     def draw_ship_nums(self):
         """Draws the ship number edit control
@@ -163,7 +204,7 @@ class UIDriver:
         rect_color = (16, 64, 128)
         rect_width = 75
         rect_height = 100
-        rect_x = int(self.width * 0.5)- rect_width // 2
+        rect_x = int(self.width * 0.75)- rect_width // 2
         rect_y = int(self.height * 0.55)- rect_height // 2
 
         # Add an offset gray rectangle for shadow effect
@@ -181,7 +222,7 @@ class UIDriver:
         # Add the text instructions above spindown selector rectangle
         font = pygame.font.SysFont("Arial", 30)
         text_surface = font.render(str("Select Number of Ships:"), True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=(int(self.width * 0.5), int(self.height * 0.4)))
+        text_rect = text_surface.get_rect(center=(int(self.width * 0.78), int(self.height * 0.4)))
         self.window.blit(text_surface, text_rect)
 
        # Draw ship increase button represented by a plus sign (+)
@@ -783,7 +824,7 @@ class UIDriver:
 
         # Add symbol to center of circle symbol
         font = pygame.font.SysFont("Arial", 30, bold=True)
-        text_surface = font.render(symbol, True, text_color)
+        text_surface = font.render(symbol.encode("utf8"), True, text_color)
         text_rect = text_surface.get_rect(center=center)
         surface.blit(text_surface, text_rect)
 
@@ -792,7 +833,7 @@ class UIDriver:
         """Checks if up button is clicked, and increments ship counter"""
         rect_width = 75
         rect_height = 100
-        rect_x = int(self.width * 0.5)- rect_width // 2
+        rect_x = int(self.width * 0.75)- rect_width // 2
         rect_y = int(self.height * 0.55)- rect_height // 2
         #Calculate the location of increase button
         increase_button_center = (rect_x + rect_width + 50, rect_y)
@@ -810,7 +851,7 @@ class UIDriver:
         """Checks if down button is clicked, and decrements ship counter"""
         rect_width = 75
         rect_height = 100
-        rect_x = int(self.width * 0.5)- rect_width // 2
+        rect_x = int(self.width * 0.75)- rect_width // 2
         rect_y = int(self.height * 0.55)- rect_height // 2
         #Calculate the location of decrease button
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
@@ -819,6 +860,53 @@ class UIDriver:
             self.ship_count = (self.ship_count - 1 if self.ship_count > 1 else 5)
             # Redraw to show updated choice
             self.draw_ship_nums()
+
+            # Update the display
+            pygame.display.update()
+            
+    def up_arrow_clicked(self, mouse_x, mouse_y):
+        """Checks if down button is clicked, and decrements ship counter"""
+        rect_width = 200
+        rect_height = 75
+        rect_x = int(self.width * 0.20)- rect_width // 2
+        rect_y = int(self.height * 0.55)- rect_height // 2
+        #Calculate the location of increase button
+        up_arrow_button_center = (rect_x + rect_width + 50, rect_y)
+        if ((mouse_x - up_arrow_button_center[0]) ** 2 + (mouse_y - up_arrow_button_center[1]) ** 2) ** 0.5 <= 30:
+            if(self.difficulty == "PvP"):
+                self.difficulty = "Easy"
+            elif(self.difficulty == "Easy"):
+                self.difficulty = "Medium"
+            elif(self.difficulty == "Medium"):
+                self.difficulty = "Hard"
+            elif(self.difficulty == "Hard"):
+                self.difficulty = "PvP"
+                
+            self.draw_ai_selector()
+
+            # Update the display
+            pygame.display.update()            
+
+        
+    def down_arrow_clicked(self, mouse_x, mouse_y):
+        """Checks if down button is clicked, and decrements ship counter"""
+        rect_width = 200
+        rect_height = 75
+        rect_x = int(self.width * 0.20)- rect_width // 2
+        rect_y = int(self.height * 0.55)- rect_height // 2
+        #Calculate the location of decrease button
+        down_arrow_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
+        if ((mouse_x - down_arrow_button_center[0]) ** 2 + (mouse_y - down_arrow_button_center[1]) ** 2) ** 0.5 <= 30:
+            if(self.difficulty == "Easy"):
+                self.difficulty = "PvP"
+            elif(self.difficulty == "Medium"):
+                self.difficulty = "Easy"
+            elif(self.difficulty == "Hard"):
+                self.difficulty = "Medium"
+            elif(self.difficulty == "PvP"):
+                self.difficulty = "Hard"
+                
+            self.draw_ai_selector()
 
             # Update the display
             pygame.display.update()
