@@ -72,6 +72,12 @@ class GameState:
         @return string: The difficulty of the game
         """
         return self.difficulty
+    
+    def get_turn(self):
+        """Gets the current turn
+        @return int: The current turn
+        """
+        return self.turn
 
     def friendly_board(self):
         """Quick function to access the board whose turn it is

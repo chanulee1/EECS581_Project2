@@ -62,6 +62,8 @@ class UIDriver:
         self.p1_laptop = Laptop(1, self.width, self.height, tile_size = 40)   
         # p2 laptop object
         self.p2_laptop = Laptop(2, self.width, self.height, tile_size = 40)
+        # AI laptop object
+        self.ai_laptop = Laptop(2, self.width, self.height, tile_size = 40)
         # Member variable to see which laptop is currently being displayed
         self.cur_laptop = None
         # Go button object
@@ -69,8 +71,12 @@ class UIDriver:
         # Number of ships locked in via main menu
         self.ship_count = 3     
         # Difficulty setting locked in via main menu
-        self.difficulty = "Easy"     
+        self.difficulty = "PvP"     
     
+    def get_ship_count(self):
+        """Returns the ship count"""
+        return self.ship_count
+
     def get_difficulty(self):
         """Returns the difficulty setting"""
         return self.difficulty
@@ -476,8 +482,10 @@ class UIDriver:
         player_number = gamestate.turn
         if player_number == 1: # Player 1
             self.cur_laptop = self.p1_laptop
-        elif player_number == 2: # Player 2
+        elif player_number == 2 and gamestate.get_difficulty() == "PvP": # Player 2
             self.cur_laptop = self.p2_laptop
+        elif player_number == 2 and not gamestate.get_difficulty() == "PvP": # Player 2
+            self.cur_laptop = self.ai_laptop
         else: # Only allow for 2 players
             raise ValueError("Invalid player number")
         
