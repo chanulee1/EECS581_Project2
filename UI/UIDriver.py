@@ -778,7 +778,10 @@ class UIDriver:
         if self.cur_laptop is self.p1_laptop:
             gameover_text = "Player 1 Wins!"
         elif self.cur_laptop is self.p2_laptop:
-            gameover_text = "Player 2 Wins!"
+            if self.difficulty == "PvP":
+                gameover_text = "Player 2 Wins!"
+            else:
+                gameover_text = "AI Wins!"
         else: # Make sure to do error checking
             raise ValueError("Invalid player winning")
 

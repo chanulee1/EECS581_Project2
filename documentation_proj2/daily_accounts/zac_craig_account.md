@@ -16,6 +16,6 @@
 
 ## 09/23/2024
 
-**Time spent on project:** 8 hours
+**Time spent on project:** 9 hours
 
-**Brief summary of what you did:** Set up the AI and has it place ships randomly. Also got turns working for AI difficulties. Set up barebones AI difficulty functions so that each difficulty can have its area of thinking. Time for this day is an aggregation of the weekends time because I didn't finish my thoughts until today.
+**Brief summary of what you did:** Set up the AI and has it place ships randomly. Also got turns working for AI difficulties. Set up barebones AI difficulty functions so that each difficulty can have its area of thinking. Time for this day is an aggregation of the weekends time because I didn't finish my thoughts until today. Handled duplicate attacks for if the difficulty is easy. Updated the win message if the AI wins. Implemented Easy Difficulty

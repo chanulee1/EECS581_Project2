@@ -87,7 +87,7 @@ def main():
                 row_random = random.randint(1, 10 - ship)
                 columns = "ABCDEFGHIJ"
                 columns = columns[:10 - ship]
-                col_random = random.choice('ABCDEFGHIJ')
+                col_random = random.choice("ABCDEFGHIJ")
                 orientation_random = random.choice(['H', 'V'])
                 ship_start = (row_random, col_random)
                 ship_end = list()
@@ -143,7 +143,7 @@ def main():
                     message = result.capitalize() + '!'
                 ui.do_text_screen(message)
 
-
+    # if it's not a PvP game, then the AI will play
     else:
         # hit locations are only for if the AI hits a ship
         ai_hit_locations = list()
@@ -170,8 +170,15 @@ def main():
                 #set flag to True and end loop
             else:
                 ui.do_text_screen("AI's Turn")
-                ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(ai_hit_locations) if gs.get_difficulty() == 'Medium' else ai_hard())
-                result = gs.fire(ai_attack_location)
+                
+                # attempts to attack until a valid attack is made
+                while True:
+                    try:
+                        ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(ai_hit_locations) if gs.get_difficulty() == 'Medium' else ai_hard())
+                        result = gs.fire(ai_attack_location)
+                    except (ValueError, IndexError):
+                        continue
+                    break
                 
             
             if result =='gameover':
@@ -208,8 +215,12 @@ def main():
 def ai_easy():
     shot_location = list()
     
-    # NEED TO IMPLEMENT
-    # Should attack randomly no matter what
+    random.seed()
+    row_random = random.randint(1, 10)
+    col_random = random.choice('ABCDEFGHIJ')
+    
+    shot_location.append(row_random)
+    shot_location.append(col_random)
     
     return shot_location
 
