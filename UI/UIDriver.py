@@ -769,21 +769,33 @@ class UIDriver:
         # Then reset our whole screen
         self.erase()
     
-    def draw_gameover(self):
+    def draw_gameover(self, gamestate):
         """Draws the gameover screen
         
         @raise ValueError: if an invalid laptop is loaded into self.cur_laptop"""
 
         # Check who won
-        if self.cur_laptop is self.p1_laptop:
-            gameover_text = "Player 1 Wins!"
-        elif self.cur_laptop is self.p2_laptop:
-            if self.difficulty == "PvP":
+        # if self.cur_laptop is self.p1_laptop:
+        #     gameover_text = "Player 1 Wins!"
+        # elif self.cur_laptop is self.p2_laptop:
+        #     if self.difficulty == "PvP":
+        #         gameover_text = "Player 2 Wins!"
+        #     else:
+        #         gameover_text = "AI Wins!"
+        # else: # Make sure to do error checking
+        #     raise ValueError("Invalid player winning")
+
+        if gamestate.get_difficulty() == "PvP": # if its a pvp game
+            if gamestate.get_turn() == 1: # turn 1 means its player 1
+                gameover_text = "Player 1 Wins!"
+            else:
                 gameover_text = "Player 2 Wins!"
+        else: # if its an AI game
+            if gamestate.get_turn() == 1:
+                gameover_text = "Player 1 Wins!"
             else:
                 gameover_text = "AI Wins!"
-        else: # Make sure to do error checking
-            raise ValueError("Invalid player winning")
+
 
         self.window.fill(self.bgcolor) 
         font_size = int(self.width*.1) # Adjusts font size to be 0.1 of width

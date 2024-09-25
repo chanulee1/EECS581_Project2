@@ -161,6 +161,10 @@ def main():
         #Loop while gameover flag is False
         gameover = False
         ## MAIN LOOP ##
+
+        # Test to see if the AI ships are placed correctly, also so player can see where the AI ships are for testing purposes
+        # print_ai_ships(gs)
+
         while not gameover:
             if gs.turn == 1:
                 #ask the players to switch who is playing
@@ -174,7 +178,7 @@ def main():
                 # attempts to attack until a valid attack is made
                 while True:
                     try:
-                        ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(ai_hit_locations) if gs.get_difficulty() == 'Medium' else ai_hard())
+                        ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(ai_hit_locations) if gs.get_difficulty() == 'Medium' else ai_hard(gs))
                         result = gs.fire(ai_attack_location)
                     except (ValueError, IndexError):
                         continue
@@ -202,7 +206,7 @@ def main():
    
 
     #Gameover screen
-    ui.draw_gameover()
+    ui.draw_gameover(gs)
     sleep(2)
 
     #Close the window
@@ -234,13 +238,33 @@ def ai_medium(hit_locations):
     return shot_location
 
 # Function for AI to attack if difficulty is Hard
-def ai_hard():
-    shot_location = list()
-    
-    # NEED TO IMPLEMENT
+def ai_hard(gs):
     # Knows where all player ships are and attacks based on that
+
+    shot_location = list() # create an empty list to store the locations where the AI will shoot
+
+    enemy_board = gs.player_one_board # access the player one board so the AI can see where the players ships are
+
+    for row in range(1, 11): # Loop through all the rows
+        for col in 'ABCDEFGHIJ': # Loop through all the columns
+            if enemy_board.loc[row, col] in ['1', '2', '3', '4', '5']: # check if the location contains a ship, ships are represented by numbers 1-5
+                shot_location.append(row) # append the row to the shot_location list
+                shot_location.append(col) # append the column to the shot_location list
+                return shot_location # return the shot_location list
+            
+# Function to print the AI's ship positions for testing purposes
+def print_ai_ships(gs):
     
-    return shot_location
+    ai_board = gs.player_two_board # access the AI board so we can print the AI's ship positions
+    
+    print("AI Ship Positions:")
+    
+    # Loop through each row and column to find ships
+    for row in range(1, 11):
+        for col in 'ABCDEFGHIJ':
+            if ai_board.loc[row, col] in ['1', '2', '3', '4', '5']:
+                print(f"Ship found at: ({row}, '{col}')")
+
 
 if __name__ == "__main__":
     main()
