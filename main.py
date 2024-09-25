@@ -2,6 +2,7 @@
 main.py
 Authors:
     - Zachary Craig
+    - Carson Treece
 Date: 9/19/2024
 
 Purpose: driver file for the battleship game

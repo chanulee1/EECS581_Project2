@@ -2,6 +2,7 @@
 UIDriver.py
 Authors:
     - Zachary Craig
+    - Carson Treece
 Date: 9/19/2024
 
 Purpose: drives the UI of the battleship game
