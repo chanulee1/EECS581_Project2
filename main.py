@@ -179,7 +179,7 @@ def main():
                 # attempts to attack until a valid attack is made
                 while True:
                     try:
-                        ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(ai_hit_locations) if gs.get_difficulty() == 'Medium' else ai_hard(gs))
+                        ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(gs, ai_hit_locations) if gs.get_difficulty() == 'Medium' else ai_hard(gs))
                         result = gs.fire(ai_attack_location)
                     except (ValueError, IndexError):
                         continue
@@ -230,13 +230,168 @@ def ai_easy():
     return shot_location
 
 # Function for AI to attack if difficulty is Medium
-def ai_medium(hit_locations):
-    shot_location = list()
-    
-    # NEED TO IMPLEMENT
+def ai_medium(gs: GameState, hit_locations) -> tuple[int, str]:
     # Should attack randomly until it hits a ship, then attack each adjacent square until the ship is sunk
     
+    # NEED TO IMPLEMENT
+
+    known_attack, shot_location = known_location(gs)
+
+    if not known_attack:
+        random.seed()
+        row_random = random.randint(1, 10)
+        col_random = random.choice('ABCDEFGHIJ\0')
+        
+        shot_location.append(row_random)
+        shot_location.append(col_random)
+    else:
+        print(f'shot_location = {shot_location}')
+    
     return shot_location
+
+# Determines if there's a know location of a ship
+def known_location(gs: GameState) -> tuple[bool, list[int, str]]:
+
+    # So I need to determine if there's a know location based on gs.enemy_board()
+    # a '*' means that the it was a hit, 'M' is a miss, '~' is not shot yet, 1-5 means that a ship is there
+    # I believe those are the only symbols on a player board
+
+    attack_board = gs.enemy_board()
+
+    cols = 'ABCDEFGHIJ'
+    for row in range(1, 11): # Loop through all the rows
+        for col in range(len(cols)): # Loop through all the columns
+            # print(f'[{row}, {cols[col]}] = {attack_board.loc[row, cols[col]]}')
+            if len(attack_board.loc[row, cols[col]]) == 2:
+                # print("Entered the hit if")
+
+                attack_up = [-1, ""]
+                attack_down = [-1, ""]
+                attack_left = [-1, ""]
+                attack_right = [-1, ""]
+                up = False
+                down = False
+                left = False
+                right = False
+
+                #check up
+                for i in range(1, 5): # 5 is the size of the biggest ship
+                    try:
+                        if i > 1: # mark up as a known direction of the ship
+                            up = True
+                        if not (attack_board.loc[row-i, cols[col]] == 'M' or len(attack_board.loc[row-i, cols[col]]) == 2): # If we haven't sent a shot up
+                            attack_up = [row-i, cols[col]]
+                            # print(f'Setting attack_up as = {attack_up}')
+                            if i > 1: # we don't want to prematurely attack up if we know it's to the side or below
+                                return (up, attack_up)
+                            break
+                        if not len(attack_board.loc[row-i, cols[col]]) == 2: # if the spot up was not a hit
+                            break
+                    except: # only errors when it hits the edge of the board
+                        break
+                # check down
+                for i in range(1, 5): # 5 is the size of the biggest ship
+                    try:
+                        if i > 1: # mark down as a known direction of the ship
+                            down = True
+                        if not (attack_board.loc[row+i, cols[col]] == 'M' or len(attack_board.loc[row+i, cols[col]]) == 2): # If we haven't sent a shot down
+                            attack_down = [row+i, cols[col]]
+                            # print(f'Setting attack_down as {attack_down}')
+                            if i > 1: # we don't want to prematurely attack down if we know it's to the side
+                                return (down, attack_down)
+                            break
+                        if not len(attack_board.loc[row+i, cols[col]]) == 2: # if the spot down was not a hit
+                            break
+                    except: # only errors when it hits the edge of the board
+                        break
+                pass
+                # check left
+                for i in range(1, 5): # 5 is the size of the biggest ship
+                    try:
+                        if i > 1: # mark left as a known direction of the ship
+                            left = True
+                        if not (attack_board.loc[row, cols[col-i]] == 'M' or len(attack_board.loc[row, cols[col-i]]) == 2): # If we haven't sent a shot left
+                            attack_left = [row, cols[col-i]]
+                            # print(f'Setting attack_left as {attack_left}')
+                            if i > 1: # we don't want to prematurely attack left if we know it's to the right
+                                return (left, attack_left)
+                            break
+                        if not len(attack_board.loc[row, cols[col-i]]) == 2: # if the spot left was not a hit
+                            break
+                    except: # only errors when it hits the edge of the board
+                        break
+                # check right
+                for i in range(1, 5): # 5 is the size of the biggest ship
+                    try:
+                        if i > 1: # mark right as a known direction of the ship
+                            right = True
+                        if not (attack_board.loc[row, cols[col+i]] == 'M' or len(attack_board.loc[row, cols[col+i]]) == 2): # If we haven't sent a shot right
+                            attack_right = [row, cols[col+i]]
+                            # print(f'Setting attack_right as {attack_right}')
+                            if i > 1: # this if statement is here to keep the structure the same
+                                return (right, attack_right)
+                            break
+                        if attack_board.loc[row, cols[col+i]] == 'M': # if the spot right was a miss stop checking right
+                            break
+                    except: # only errors when it hits the edge of the board
+                        break
+                # Checked all directions and the ship has no unshot spots in a known direction
+                # Now I need to check what directions we can and should shoot
+
+                # marking which directions have spots to shoot
+                go_up = True
+                go_down = True
+                go_left = True
+                go_right = True
+                if attack_up == [-1, ""]:
+                    go_up = False
+                if attack_down == [-1, ""]:
+                    go_down = False
+                if attack_left == [-1, ""]:
+                    go_left = False
+                if attack_right == [-1, ""]:
+                    go_right = False
+
+                print(f'[{row}, {cols[col]}]')
+                print(f'up = {up}\t\tdown = {down}\t\tleft = {left}\t\tright = {right}')
+                print(f'go_up = {go_up}\t\tgo_down = {go_down}\t\tgo_left = {go_left}\t\tgo_right = {go_right}')
+                print(f'attack_up = {attack_up}\tattack_down = {attack_down}\tattack_left = {attack_left}\tattack_right = {attack_right}')
+
+                # Theoretically if one direction in known (and doesn't have a unshot spot in that direction which is implied) 
+                # and the other direction has a spot to be shot we should shoot the other way
+                if up:
+                    if go_down:
+                        return (True, attack_down)
+                if down:
+                    if go_up:
+                        return (True, attack_up)
+                if left:
+                    if go_right:
+                        return (True, attack_right)
+                if right:
+                    if go_left:
+                        return (True, attack_left)
+                
+                # if no direction is known go in a valid direction
+                if not (up or down or left or right):
+                    # print("no known direction")
+                    if go_up:
+                        return (True, attack_up)
+                    if go_down:
+                        return (True, attack_down)
+                    if go_left:
+                        return (True, attack_left)
+                    if go_right:
+                        return (True, attack_right)
+                
+                # if nothing has triggered this ship is sunk and move on to the next hit position
+                        
+            else: # The spot was not a hit
+                pass
+    # If we reach here there was no hit ships that were not sunk
+    return (False, [])
+                
+
 
 # Function for AI to attack if difficulty is Hard
 def ai_hard(gs):
