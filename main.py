@@ -82,6 +82,9 @@ def main():
         #Loop to keep trying to place ships until they are all successfully placed
         while True:
             ships_to_place = ui.get_ship_count()
+            
+            # resets the AI board before placing ships and if there was an error in its last placement attempt
+            gs.reset_ai_board()
 
             for ship in range(ships_to_place):
                 random.seed()

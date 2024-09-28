@@ -60,6 +60,12 @@ class GameState:
         # This can be either "easy", "medium", "hard", or "pvp"
         self.difficulty = difficulty
     
+    def reset_ai_board(self):
+        """Resets the AI board to a blank board
+        """
+        self.player_two_board = create_blank_board()
+        self._player_two_ships = 0
+    
     def set_difficulty(self, difficulty: str):
         """Sets the difficulty of the game
         @param string difficulty: The difficulty to set the game to. Can be "easy", "medium", "hard", or "pvp"
