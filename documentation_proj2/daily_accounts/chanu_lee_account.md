@@ -21,3 +21,21 @@
 **Time spent on project:** 2 hours
 
 **Brief summary of what you did:** Team meeting, gave updates on progress. Talked to Connor about his plans for the custom addition and created UML diagram modeling the feature.
+
+## 9/27/2024
+
+**Time spent on project:** 15 minutes
+
+**Brief summary of what you did:** Met with team, gave updates on progress.
+
+## 9/28/2024
+
+**Time spent on project:** 2 hours
+
+**Brief summary of what you did:** Worked on documentation, writing a summary of changes the devs made to implement the features.
+
+## 9/28/2024
+
+**Time spent on project:** 1 hour
+
+**Brief summary of what you did:** Made a UML diagram for the new custom feature (extra turn) and got GTA's approval. Finished documentation and submitted the project.
