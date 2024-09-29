@@ -30,3 +30,11 @@
 
 **Brief summary of what you did:** Implemented the hard AI, also fixed a bug in draw_gameover() where it would print that player 1 won even if the AI won the match.
                                     Implemented a function to print where the AIs have placed their ships, this was so I could make sure that gameover was outputting the correct stuff.
+
+
+
+## 09/29/2024
+
+**Time spent on project:** 3 hours
+
+**Brief summary of what you did:** Added custom feature where if a player or AI sinks a ship they get to go again. 

@@ -39,7 +39,7 @@ def main():
     ui.draw_go()
 
     # spin until the "GO" button is pressed
-    ui.wait_for_go(ship_num_menu = True)
+    ui.wait_for_go(ship_num_menu=True)
 
     # set the background color for the game
     ui.bgset()
@@ -52,29 +52,19 @@ def main():
         font = pygame.font.SysFont('Arial', 36)
         ui.do_text_screen(f"Player {player}'s Turn")
         
-        #Loop to keep trying to place ships until they are all successfully placed
+        # Loop to keep trying to place ships until they are all successfully placed
         while True:
-            ships = ui.draw_ship_box(player_number = player) # <-- this includes a wait_for_go kind of call
-            # store their ship placements
-            #ships = ui.get_ship_placements()
-            #ships = [((1, 'A'), (1, 'A')), ((2, 'A'), (2, 'B')), ((3, 'C'), (3, 'A'))] #hardcoded - REMOVE
-            #Iterates through each ship and calls add_ship for player 1
+            ships = ui.draw_ship_box(player_number=player)
+            # Iterates through each ship and calls add_ship for player 1 or 2
             for ship in ships:
-                #Try-Except block to handle errors raised in add_ship by forcing player 1 to re-place ships
                 try:
-                    #adds each ship to gamestate
                     gs.add_ship(ship[0], ship[1])
-                    #Create flag and set it to false
                     error_occurred = False
                 except (ValueError, IndexError):
-                    #Tells the player what to do
                     ui.do_text_screen(f"Player {player}, please try again")
-                    #Set error flag to True
                     error_occurred = True
-                    #Exit the for loop to restart the while loop
                     break
 
-            #Exit the while loop if no errors occurred
             if not error_occurred:
                 break
     
@@ -86,22 +76,18 @@ def main():
         font = pygame.font.SysFont('Arial', 36)
         ui.do_text_screen(f"AI is Placing Ships")
         
-        #Loop to keep trying to place ships until they are all successfully placed
+        # Loop to keep trying to place ships until they are all successfully placed
         while True:
             ships_to_place = ui.get_ship_count()
-            
-            # resets the AI board before placing ships and if there was an error in its last placement attempt
             gs.reset_ai_board()
 
             for ship in range(ships_to_place):
                 random.seed()
                 row_random = random.randint(1, 10 - ship)
-                columns = "ABCDEFGHIJ"
-                columns = columns[:10 - ship]
                 col_random = random.choice("ABCDEFGHIJ")
                 orientation_random = random.choice(['H', 'V'])
                 ship_start = (row_random, col_random)
-                ship_end = list()
+
                 if orientation_random == 'H':
                     ship_end = (row_random, chr(ord(col_random) + ship))
                 else:
@@ -115,12 +101,10 @@ def main():
                     error_occurred = True
                     break
                 
-                
-            #Exit the while loop if no errors occurred
             if not error_occurred:
                 log("AI ships placed")
                 break
-    
+
     gs.set_difficulty(ui.get_difficulty())
 
     place_ships(1)
@@ -135,30 +119,53 @@ def main():
         # draw the large "GAME START" text
         ui.do_text_screen("GAME START!")
         
-        #Loop while gameover flag is False
+        # Loop while gameover flag is False
         gameover = False
         while not gameover:
-            #ask the players to switch who is playing
-            ui.do_text_screen(f"Player {gs.turn}'s Turn")
-            #saves the coordinates the user shot at
-            shot = ui.wait_for_shot(gs)
-            result = gs.fire(shot) #shoot your shot baby
-            #set flag to True and end loop
-            if result =='gameover':
-                gameover = True
-            #return result - either "Hit!" "Miss!" or sunk
-            else:
-                if 'sunk' in result:
-                    message = f'You Sunk Enemy Ship {result[-1]}'
+            if gs.turn == 1:
+                # Player's turn
+                ui.do_text_screen(f"Player {gs.turn}'s Turn")
+                # saves the coordinates the user shot at
+                shot = ui.wait_for_shot(gs)
+                # shoot your shot baby
+                result = gs.fire(shot)
+
+                # set flag to True and end loop
+                if result == 'gameover':
+                    gameover = True
                 else:
-                    message = result.capitalize() + '!'
-                ui.do_text_screen(message)
+                    if 'sunk' in result:
+                        message = f'You Sunk Enemy Ship {result[-1]}'
+                        ui.do_text_screen(message)
+                        # Player gets another turn after sinking a ship, so continue the loop without switching turns
+                        continue
+                    else:
+                        message = result.capitalize() + '!'
+                        ui.do_text_screen(message)
+                        # Switch to player 2 after a hit or miss
+                        gs.turn = 2
+            else:
+                # Player 2's turn (PvP)
+                ui.do_text_screen(f"Player {gs.turn}'s Turn")
+                shot = ui.wait_for_shot(gs)
+                result = gs.fire(shot)
+
+                if result == 'gameover':
+                    gameover = True
+                else:
+                    if 'sunk' in result:
+                        message = f'You Sunk Enemy Ship {result[-1]}'
+                        ui.do_text_screen(message)
+                        # Player 2 gets another turn after sinking a ship, so continue
+                        continue
+                    else:
+                        message = result.capitalize() + '!'
+                        ui.do_text_screen(message)
+                        # Switch to player 1 after a hit or miss
+                        gs.turn = 1
 
     # if it's not a PvP game, then the AI will play
     else:
-        # Initialized variable to store the AI's turn attack location
-        ai_attack_location = list()
-        
         gs.turn = 2
         place_ai_ships()
         gs.turn = 1
@@ -166,24 +173,34 @@ def main():
         # draw the large "GAME START" text
         ui.do_text_screen("GAME START!")
         
-        #Loop while gameover flag is False
+        # Loop while gameover flag is False
         gameover = False
-        ## MAIN LOOP ##
-
-        # Test to see if the AI ships are placed correctly, also so player can see where the AI ships are for testing purposes
-        # print_ai_ships(gs)
-
         while not gameover:
             if gs.turn == 1:
-                #ask the players to switch who is playing
-                ui.do_text_screen(f"Player {gs.turn}'s Turn")#saves the coordinates the user shot at
+                # Player's turn against AI
+                ui.do_text_screen(f"Player {gs.turn}'s Turn")
                 shot = ui.wait_for_shot(gs)
-                result = gs.fire(shot) #shoot your shot baby
-                #set flag to True and end loop
+                result = gs.fire(shot)
+
+                if result == 'gameover':
+                    gameover = True
+                else:
+                    if 'sunk' in result:
+                        message = f'You Sunk Enemy Ship {result[-1]}'
+                        ui.do_text_screen(message)
+                        # Player gets another turn after sinking a ship, so continue
+                        continue
+                    else:
+                        message = result.capitalize() + '!'
+                        ui.do_text_screen(message)
+                        # Switch to AI's turn after hit or miss
+                        gs.turn = 2
+
             else:
+                # AI's turn
                 ui.do_text_screen("AI's Turn")
                 
-                # attempts to attack until a valid attack is made
+                # AI keeps trying to attack until a valid shot is made
                 while True:
                     try:
                         ai_attack_location = (ai_easy() if gs.get_difficulty() == 'Easy' else ai_medium(gs) if gs.get_difficulty() == 'Medium' else ai_hard(gs))
@@ -191,32 +208,26 @@ def main():
                     except (ValueError, IndexError):
                         continue
                     break
-                
-            
-            if result =='gameover':
-                gameover = True
-            #return result - either "Hit!" "Miss!" or sunk
-            else:
-                # If turn is 2 then use player 1 branch because gs.fire() switches the turn
-                if gs.get_turn() == 2:
-                    if 'sunk' in result:
-                        message = f'You Sunk Enemy Ship {result[-1]}'
-                    else:
-                        message = result.capitalize() + '!'
+
+                if result == 'gameover':
+                    gameover = True
                 else:
                     if 'sunk' in result:
                         message = f'AI Sunk Your Ship {result[-1]}'
+                        ui.do_text_screen(message)
+                        # AI gets another turn after sinking a ship, so continue
+                        continue
                     else:
                         message = result.capitalize() + '!'
-                ui.do_text_screen(message)
-    
-   
+                        ui.do_text_screen(message)
+                        # Switch back to player's turn after hit or miss
+                        gs.turn = 1
 
-    #Gameover screen
+    # Gameover screen
     ui.draw_gameover(gs)
     sleep(2)
 
-    #Close the window
+    # Close the window
     pygame.quit()
 
 

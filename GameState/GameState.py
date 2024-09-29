@@ -110,75 +110,46 @@ class GameState:
         """
         
         ### ERROR CHECKING SECTION
-
-        # Checks if the coords provided are not in the 10x10
         if not verify_coord(coord):
-            # Logs the error in coordinate passing using the Logger.py
             log(f"fire(self, coord): fire was passed an invalid coordinate ({coord}) that is not in the 10x10 board.")
-            # Raises an IndexError to be handled
             raise IndexError(f"fire(self, coord): fire was passed an invalid coordinate ({coord}) that is not in the 10x10 board.")
 
-        ### CALCULATE RESULT SECTION
-
-        # Checks whose turn it is to establish opponent_board variable
+        # Establish opponent's board
         opponent_board = (self.player_two_board if self.turn == 1 else self.player_one_board)
 
         match opponent_board.loc[coord[0], coord[1]]:
-            # The target was empty water
             case "~":
-                # Mark the spot with a "miss"
                 opponent_board.loc[coord[0], coord[1]] = "M"
-
-                # Swaps the turn
-                self.turn = (2 if self.turn == 1 else 1)
-
-                # Returns the "miss" status of the shot
                 return "miss"
 
-            # The target was an unhit part of a ship
             case '1' | '2' | '3' | '4' | '5':
-                
-                # Checks if this segement is the opponent only has this final ship segment
+                # Check if this is the last part of a ship
                 if self.turn == 1:
                     if self._player_two_ships == 1:
-                        # If so, returns that the game is over
                         return "gameover"
                 else:
-                   if self._player_one_ships == 1:
-                        # If so, returns that the game is over
-                        return "gameover" 
+                    if self._player_one_ships == 1:
+                        return "gameover"
 
-                # Marks the spot as "hit" by adding a "*" to the end of the number
-                opponent_board.loc[coord[0], coord[1]] = opponent_board.loc[coord[0], coord[1]] + "*"
-                
-                # Removes one ship segment from the counter
+                # Mark the spot as "hit"
+                opponent_board.loc[coord[0], coord[1]] += "*"
+
+                # Reduce the number of ship segments remaining
                 if self.turn == 1:
                     self._player_two_ships -= 1
                 else:
                     self._player_one_ships -= 1
 
-                # Swaps whose turn it is
-                self.turn = 2 if (self.turn == 1) else 1
-
-                # Checks the opponent's board to see if there are any more of unhit versions of the target that was hit. 
-                # This works for detecting sunk ships since there aren't multiple of the same length ships.
-                if opponent_board.isin([opponent_board.loc[coord[0], coord[1]][0]]).any().any():
-                    
-                    # Returns "hit" when the coord has a ship, but doesn't cause a sink
-                    return "hit"
-                
-                else:
-
-                    # Returns "sunk #" where # is the length of the ship that was sunk. Again this works well since there is only 1 ship of each length.
+                # Check if the ship has been fully sunk
+                if not opponent_board.isin([opponent_board.loc[coord[0], coord[1]][0]]).any().any():
                     return f"sunk {opponent_board.loc[coord[0], coord[1]][0]}"
-                    
-            # The target was not any of those, which, assuming no issues with board creation, should be a spot already targeted previously. This shouldn't be possible.
-            case _:
+                else:
+                    return "hit"
 
-                # Logs the error in coordinate passing using the Logger.py
-                log(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
-                # Raises an ValueError to be handled
-                raise ValueError(f"fire(self, coord): fire was passed a coordinate ({coord}) that is in the 10x10 but should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
+            case _:
+                log(f"fire(self, coord): fire was passed a coordinate ({coord}) that should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
+                raise ValueError(f"fire(self, coord): fire was passed a coordinate ({coord}) that should not be targeted '{opponent_board.loc[coord[0], coord[1]]}'.")
+
 
 
     def add_ship(self, start: tuple[int, str], end: tuple[int, str]):
