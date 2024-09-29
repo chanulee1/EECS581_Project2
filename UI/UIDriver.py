@@ -3,6 +3,7 @@ UIDriver.py
 Authors:
     - Zachary Craig
     - Carson Treece
+    - Connor Schroeder
 Date: 9/19/2024
 
 Purpose: drives the UI of the battleship game
@@ -56,7 +57,13 @@ class UIDriver:
         self.icon_path = "./assets/battleshipLogo.jpeg"
         self.icon = pygame.image.load(self.icon_path)
         pygame.display.set_icon(self.icon)
-        
+
+        # Add all color scheme options
+        self.scheme_options = [((17, 116, 175), (255, 255, 255), (16, 64, 128), (0, 0, 0))]
+        self.scheme_options.append(((255, 102, 102), (238, 214, 175), (0, 51, 102), (102, 204, 204)))
+        self.scheme_options.append(((255, 153, 51), (245, 222, 179), (102, 204, 170), (51, 179, 166)))
+        self.scheme_options.append(((128, 128, 128), (240, 248, 255), (0, 77, 77), (218, 165, 32)))
+        self.scheme_options.append(((0, 123, 167), (222, 184, 135), (255, 114, 111), (150, 194, 162)))
 
         # Define uninitialized class variables
         # p1 laptop object
@@ -68,11 +75,14 @@ class UIDriver:
         # Member variable to see which laptop is currently being displayed
         self.cur_laptop = None
         # Go button object
-        self.go_button = None   
+        self.go_button = None
         # Number of ships locked in via main menu
-        self.ship_count = 3     
+        self.ship_count = 3
         # Difficulty setting locked in via main menu
-        self.difficulty = "PvP"     
+        self.difficulty = "PvP"
+        # Color scheme locked in via main menu
+        self.scheme = self.scheme_options[0]
+        self.scheme_choice = 0
     
     def get_ship_count(self):
         """Returns the ship count"""
@@ -105,6 +115,8 @@ class UIDriver:
                             self.down_button_clicked(mouse_x, mouse_y)
                             self.up_arrow_clicked(mouse_x, mouse_y)
                             self.down_arrow_clicked(mouse_x, mouse_y)
+                            self.color_up_clicked(mouse_x, mouse_y)
+                            self.color_down_clicked(mouse_x, mouse_y)
                         waiting = not self.go_clicked(mouse_x, mouse_y)
 
     def draw_go(self, surface = None):
@@ -112,7 +124,7 @@ class UIDriver:
         
         @param do_delete=False: boolean, if True will remove the element"""
 
-        rect_color = (16, 64, 128) # Dark blue
+        rect_color = self.scheme[2]
         surface = (self.window if surface == None else surface)
         window_width, window_height = surface.get_size()
 
@@ -124,8 +136,8 @@ class UIDriver:
         go_x = int(window_width * 0.5) - rect_width // 2
         go_y = int(window_height * 0.75)- rect_height // 2  # 75% down from the top
 
-        # Add an offset gray rectangle for drop shadow effect
-        pygame.draw.rect(surface, (0, 0, 0) , (go_x + 5, go_y + 5, rect_width, rect_height), border_radius=10)
+        # Add an offset rectangle for drop shadow effect
+        pygame.draw.rect(surface, self.scheme[3] , (go_x + 5, go_y + 5, rect_width, rect_height), border_radius=10)
 
         # Main rectangle with rounded corners
         pygame.draw.rect(surface, rect_color, (go_x, go_y, rect_width, rect_height), border_radius=10)
@@ -133,7 +145,7 @@ class UIDriver:
         font_size = int(rect_height * 0.7)  # Font = 70% of text
         font = pygame.font.SysFont("Arial", font_size)
         go_button = "GO"
-        text_surface = font.render(go_button, True, (255, 255, 255))
+        text_surface = font.render(go_button, True, self.scheme[1])
 
         # Center text in button
         text_rect = text_surface.get_rect(center=(go_x + rect_width // 2, go_y + rect_height // 2))
@@ -240,6 +252,39 @@ class UIDriver:
         decrease_button_center = (rect_x + rect_width + 50, rect_y + rect_height)
         self.draw_button(self.window, decrease_button_center, 30, "-", (16, 64, 128), (255, 255, 255))
 
+    def draw_color_selector(self):
+        """Draws the color scheme selector control"""
+        # Draw spindown selector
+        rect_color = (0, 0, 0)
+        rect_width = 125
+        rect_height = 125
+        rect_x = int(self.width * 0.50)- rect_width // 2
+        rect_y = int(self.height * 0.55)- rect_height // 2
+        
+        # Main rectangle border
+        pygame.draw.rect(self.window, rect_color, (rect_x, rect_y, rect_width, rect_height), width=5)
+
+        # Fill the spindown selector rectangle with color scheme
+        pygame.draw.rect(self.window, self.scheme[0], (rect_x + 5, rect_y + 5, rect_width - 10, rect_height - 10))
+        font = pygame.font.SysFont("Arial", 50)
+        text_surface = font.render(str("Grid"), True, self.scheme[1])
+        text_rect = text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + rect_height // 2))
+        self.window.blit(text_surface, text_rect)
+
+        # Add header to the color scheme spindown selector
+        font = pygame.font.SysFont("Arial", 30)
+        text_surface = font.render(str("Select Color Scheme:"), True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(int(self.width * 0.5), int(self.height * 0.4)))
+        self.window.blit(text_surface, text_rect)
+
+        # Draw color move up button represented by an up arrow (^)
+        option_button_up = (rect_x + rect_width + 50, rect_y + 20)
+        self.draw_button(self.window, option_button_up, 30, "\u2191", self.scheme[2], self.scheme[1], self.scheme[3])
+
+        # Draw color move down button represented by a down arrow (v)
+        option_button_down = (rect_x + rect_width + 50, rect_y + rect_height - 20)
+        self.draw_button(self.window, option_button_down, 30, "\u2193", self.scheme[2], self.scheme[1], self.scheme[3])
+
     def draw_ship_box(self, player_number = 1):
         """Draws the box containing the ships 
         and creates ship icons that can be dragged within it
@@ -256,15 +301,15 @@ class UIDriver:
  
         tugboat_spacer = TugBoat.tile_size+20
 
-        # Draw white square based on number of ships selected
-        rect_color = (255, 255, 255)
+        # Draw colored square based on number of ships selected
+        rect_color = self.scheme[1]
         rect_width = tugboat_spacer * self.ship_count + 10
         rect_height = tugboat_spacer * self.ship_count + 10
         rect_x = int(self.width * 0.15)- rect_width // 2
         rect_y = int(self.height * 0.80)- rect_height // 2
         pygame.draw.rect(background, rect_color, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
 
-        # Draw another box in bg_color to make it a white outline
+        # Draw another box in bg_color to make it a colored outline
         rect_width = tugboat_spacer * self.ship_count
         rect_height = tugboat_spacer * self.ship_count
         rect_x = int(self.width * 0.15)- rect_width // 2
@@ -516,7 +561,7 @@ class UIDriver:
                          else (73, 160, 169))
                 pygame.draw.rect(self.window, color, rect)
                 # Draw border
-                pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
+                pygame.draw.rect(self.window, self.scheme[1], rect, 1)
 
                 # Grab their grid's tile
                 their_tile = self.cur_laptop.their_grid[row][col]
@@ -533,22 +578,22 @@ class UIDriver:
                          else (73, 160, 169))
                 pygame.draw.rect(self.window, color, rect)
                 # Draw border
-                pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
+                pygame.draw.rect(self.window, self.scheme[1], rect, 1)
 
         # Title for our grid
         font = pygame.font.SysFont("Arial", 50, bold=True)
-        title_text_our = font.render("Friendly Ships", True, (255, 255, 255))
+        title_text_our = font.render("Friendly Ships", True, self.scheme[1])
         title_rect_our = title_text_our.get_rect(center=(self.cur_laptop.our_grid[0][0].top_left[0] + self.cur_laptop.tile_size * Laptop.SIZE_X / 2, 40))
         self.window.blit(title_text_our, title_rect_our)
 
         # Title for their grid
-        title_text_their = font.render("Enemy Ships", True, (255, 255, 255))
+        title_text_their = font.render("Enemy Ships", True, self.scheme[1])
         title_rect_their = title_text_their.get_rect(center=(self.cur_laptop.their_grid[0][0].top_left[0] + self.cur_laptop.tile_size * Laptop.SIZE_X / 2, 40))
         self.window.blit(title_text_their, title_rect_their)
 
         # Add instructions on firing below thier grid
         font = pygame.font.SysFont("Arial", 30)
-        instruction_text = font.render("Click a square to fire!", True, (255, 255, 255))
+        instruction_text = font.render("Click a square to fire!", True, self.scheme[1])
         instruction_rect = instruction_text.get_rect(center=(
             self.cur_laptop.their_grid[0][0].top_left[0] + self.cur_laptop.tile_size * Laptop.SIZE_X / 2, 
             self.cur_laptop.their_grid[0][0].top_left[1] + self.cur_laptop.tile_size * Laptop.SIZE_Y + 40))       
@@ -614,7 +659,7 @@ class UIDriver:
         for row in range(GRID_ROWS):
             for col in range(GRID_COLS):
                 rect = pygame.Rect((self.width/2) - (GRID_SIZE * 5) + col * GRID_SIZE, (self.height/3) - (GRID_SIZE * 5) + row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
-                pygame.draw.rect(self.window, (255, 255, 255), rect, 1)
+                pygame.draw.rect(self.window, self.scheme[1], rect, 1)
 
         ## DRAW LEGEND ON SHIP PLACEMENT GRID
         font = pygame.font.SysFont("Arial", 20)
@@ -624,7 +669,7 @@ class UIDriver:
         # Draw the numbers 1-10 in a vertical bar
         for i in range(10):
             number = str(i + 1)
-            text_surface = font.render(number, True, (255, 255, 255))
+            text_surface = font.render(number, True, self.scheme[1])
             text_rect = text_surface.get_rect(center=(number_x, number_y))
             self.window.blit(text_surface, text_rect)
             number_y += GRID_SIZE
@@ -635,14 +680,14 @@ class UIDriver:
         # Draw the letters A-J in a horizontal bar
         for i in range(10):
             letter = chr(ord('A') + i)  # Get the corresponding letter
-            text_surface = font.render(letter, True, (255, 255, 255))
+            text_surface = font.render(letter, True, self.scheme[1])
             text_rect = text_surface.get_rect(center=(letter_x, letter_y))
             self.window.blit(text_surface, text_rect)
             letter_x += GRID_SIZE
 
         ## DRAW THE TEXT
         font = pygame.font.SysFont("Arial", 30)
-        text = font.render("Press R to Rotate", True, (255, 255, 255))
+        text = font.render("Press R to Rotate", True, self.scheme[1])
         text_rect = text.get_rect(center = (letter_x + GRID_SIZE*GRID_COLS/2, letter_y + GRID_SIZE*GRID_ROWS/2))
         self.window.blit(text, text_rect)
         
@@ -669,7 +714,7 @@ class UIDriver:
         # Draw the numbers 1-10 in a vertical bar (left board)
         for i in range(10):
             number = str(i + 1)
-            text_surface = font.render(number, True, (255, 255, 255))
+            text_surface = font.render(number, True, self.scheme[1])
             text_rect = text_surface.get_rect(center=(number_x, number_y))
             self.window.blit(text_surface, text_rect)
             number_y += spacing
@@ -680,7 +725,7 @@ class UIDriver:
         # Draw the letters A-J in a horizontal bar (left board)
         for i in range(10):
             letter = chr(ord('A') + i)  # Get the corresponding letter
-            text_surface = font.render(letter, True, (255, 255, 255))
+            text_surface = font.render(letter, True, self.scheme[1])
             text_rect = text_surface.get_rect(center=(letter_x, letter_y))
             self.window.blit(text_surface, text_rect)
             letter_x += spacing
@@ -693,7 +738,7 @@ class UIDriver:
         number_y = int(their_top + spacing/2)  # Starting y-coordinate for the numbers
         for i in range(10):
             number = str(i + 1)
-            text_surface = font.render(number, True, (255, 255, 255))
+            text_surface = font.render(number, True, self.scheme[1])
             text_rect = text_surface.get_rect(center=(number_x, number_y))
             self.window.blit(text_surface, text_rect)
             number_y += spacing
@@ -703,7 +748,7 @@ class UIDriver:
         letter_y = int(their_top - spacing/2)  # Adjusted y-coordinate for the letters
         for i in range(10):
             letter = chr(ord('A') + i)  # Get the corresponding letter
-            text_surface = font.render(letter, True, (255, 255, 255))
+            text_surface = font.render(letter, True, self.scheme[1])
             text_rect = text_surface.get_rect(center=(letter_x, letter_y))
             self.window.blit(text_surface, text_rect)
             letter_x += spacing
@@ -721,7 +766,7 @@ class UIDriver:
 
         # Draw key text
         bigger_font = pygame.font.SysFont("Arial", 20, bold = True)
-        text = bigger_font.render('Key:', True, (255,255,255))
+        text = bigger_font.render('Key:', True, self.scheme[1])
         text_rect = text.get_rect(center=(window_width * 0.1, y - 40))
         self.window.blit(text, text_rect)
 
@@ -754,7 +799,7 @@ class UIDriver:
 
         # Draw the large "text" Title
         font = pygame.font.SysFont("Arial", 100, bold=True)
-        text_surface = font.render(f"{text}", True, (240, 243, 189))
+        text_surface = font.render(f"{text}", True, self.scheme[1])
         text_rect = text_surface.get_rect(center=(self.width/2, self.height/2))
         text_rect.y -= 200  # Move the title up
         self.window.blit(text_surface, text_rect)
@@ -802,8 +847,8 @@ class UIDriver:
         font_size = int(self.width*.1) # Adjusts font size to be 0.1 of width
         font = pygame.font.SysFont("Arial", font_size, bold=True) # Set font with size
 
-        text_surface_white = font.render(gameover_text, True, (255, 255, 255)) # White
-        text_surface_black = font.render(gameover_text, True, (0, 0, 0))  # Black outline
+        text_surface_white = font.render(gameover_text, True, self.scheme[1])
+        text_surface_black = font.render(gameover_text, True, self.scheme[3])  # Outline
 
         text_rect = text_surface_white.get_rect(center=(self.width / 2, self.height / 2)) # Get center for text
 
@@ -838,10 +883,10 @@ class UIDriver:
         # Update the display
         pygame.display.update()
 
-    def draw_button(self, surface, center, radius, symbol, button_color, text_color):
+    def draw_button(self, surface, center, radius, symbol, button_color, text_color, button_shadow = (0, 0, 0)):
         """Draws circle with symbol button for main_menu"""
         # Draw offset circle for shadow effect
-        pygame.draw.circle(surface, (0, 0, 0), (center[0] + 5, center[1] + 5), radius)
+        pygame.draw.circle(surface, button_shadow, (center[0] + 5, center[1] + 5), radius)
 
         # Draw actual button circle
         pygame.draw.circle(surface, button_color, center, radius)
@@ -935,10 +980,47 @@ class UIDriver:
             # Update the display
             pygame.display.update()
 
+    def color_up_clicked(self, mouse_x, mouse_y):
+        """Checks if down button is clicked, and moves up one color scheme"""
+        rect_width = 125
+        rect_height = 125
+        rect_x = int(self.width * 0.50)- rect_width // 2
+        rect_y = int(self.height * 0.55)- rect_height // 2
+        #Calculate the location of up button
+        up_arrow_button_center = (rect_x + rect_width + 50, rect_y + 20)
+        if ((mouse_x - up_arrow_button_center[0]) ** 2 + (mouse_y - up_arrow_button_center[1]) ** 2) ** 0.5 <= 30:
+            self.scheme_choice = (self.scheme_choice + 1) % len(self.scheme_options)
+            self.scheme = self.scheme_options[self.scheme_choice]
+                
+            self.draw_color_selector()
+
+            # Update the display
+            pygame.display.update()            
+
+    def color_down_clicked(self, mouse_x, mouse_y):
+        """Checks if down button is clicked, and moves down one color scheme"""
+        rect_width = 125
+        rect_height = 125
+        rect_x = int(self.width * 0.50)- rect_width // 2
+        rect_y = int(self.height * 0.55)- rect_height // 2
+        #Calculate the location of down button
+        down_arrow_button_center = (rect_x + rect_width + 50, rect_y + rect_height - 20)
+        if ((mouse_x - down_arrow_button_center[0]) ** 2 + (mouse_y - down_arrow_button_center[1]) ** 2) ** 0.5 <= 30:
+            self.scheme_choice = (self.scheme_choice - 1) % len(self.scheme_options)
+            self.scheme = self.scheme_options[self.scheme_choice]
+                
+            self.draw_color_selector()
+
+            # Update the display
+            pygame.display.update()
+
     def erase(self):
         """Clears whatever is drawn on the page"""
         self.window.fill(self.bgcolor)
 
         # Update the display
         pygame.display.update()
-   
+
+    def bgset(self):
+        """Sets the background color to the chosen color scheme"""
+        self.bgcolor = self.scheme[0]

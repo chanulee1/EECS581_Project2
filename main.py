@@ -3,6 +3,7 @@ main.py
 Authors:
     - Zachary Craig
     - Carson Treece
+    - Connor Schroeder
 Date: 9/19/2024
 
 Purpose: driver file for the battleship game
@@ -31,11 +32,17 @@ def main():
     # draw ai selector
     ui.draw_ai_selector()
 
+    # draw color scheme selector
+    ui.draw_color_selector()
+
     # draw the go button
     ui.draw_go()
 
     # spin until the "GO" button is pressed
     ui.wait_for_go(ship_num_menu = True)
+
+    # set the background color for the game
+    ui.bgset()
 
     ## SHIP PLACEMENTS ##
     def place_ships(player):
